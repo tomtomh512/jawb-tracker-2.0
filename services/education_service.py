@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from models.resume import Education
 from schemas.api.education import EducationUpdate, EducationCreate
+from services.resume_service import get_resume
 
 
 def get_all_education(
@@ -41,7 +42,21 @@ def create_education(
         resume_id: UUID,
         education: EducationCreate,
 ) -> Education:
-    pass
+    resume = get_resume(db, resume_id)
+
+    db_education = Education(resume_id=resume_id, **education.model_dump())
+
+    db.add(db_education)
+    resume.updated_at = func.now()
+
+    try:
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not create education") from None
+
+    db.refresh(db_education)
+    return db_education
 
 
 def update_education(
