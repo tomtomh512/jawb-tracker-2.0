@@ -19,7 +19,7 @@ class Groq:
             api_key=os.getenv("GROQ_API_KEY"),
         )
 
-    def _log_usage(self, response):
+    def _log_usage(self, response, log_message):
         usage = response.usage
         if usage:
             print(
@@ -27,12 +27,15 @@ class Groq:
                 f"completion_tokens={usage.completion_tokens} "
                 f"total_tokens={usage.total_tokens}"
             )
+        if log_message:
+            print(f"log_message={log_message}")
 
     async def prompt(
             self,
             prompt: str,
             output_model: type[BaseModel],
             system_prompt: str | None = None,
+            log_message: str | None = None,
     ) -> BaseModel:
         schema = output_model.model_json_schema()
 
@@ -71,7 +74,7 @@ class Groq:
             # },
         )
 
-        self._log_usage(response)
+        self._log_usage(response, log_message)
 
         content = response.choices[0].message.content
 

@@ -1,6 +1,5 @@
 import asyncio
 from pathlib import Path
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -11,8 +10,8 @@ from llm.llm_models.groq import Groq
 class LLMManager:
     def __init__(self, model: str = "gemini"):
         models = {
-            "groq": Groq,
             "gemini": Gemini,
+            "groq": Groq,
         }
 
         try:
@@ -24,18 +23,30 @@ class LLMManager:
             self,
             prompt: str,
             output_model: type[BaseModel],
-            system_prompt: Optional[str] = None,
+            system_prompt: str | None = None,
+            log_message: str | None = None,
     ) -> BaseModel:
-        return await self.model.prompt(prompt, output_model, system_prompt)
+        return await self.model.prompt(
+            prompt,
+            output_model,
+            system_prompt,
+            log_message
+        )
 
     def prompt(
             self,
             prompt: str,
             output_model: type[BaseModel],
-            system_prompt: Optional[str] = None,
+            system_prompt: str | None = None,
+            log_message: str | None = None,
     ) -> BaseModel:
         return asyncio.run(
-            self.async_prompt(prompt, output_model, system_prompt)
+            self.async_prompt(
+                prompt,
+                output_model,
+                system_prompt,
+                log_message
+            )
         )
 
     async def async_prompt_pdf(
@@ -44,6 +55,7 @@ class LLMManager:
             prompt: str,
             output_model: type[BaseModel],
             system_prompt: str | None = None,
+            log_message: str | None = None,
     ) -> BaseModel:
         if not hasattr(self.model, "prompt_pdf"):
             raise NotImplementedError(
@@ -55,6 +67,7 @@ class LLMManager:
             prompt,
             output_model,
             system_prompt,
+            log_message
         )
 
     def prompt_pdf(
@@ -63,6 +76,7 @@ class LLMManager:
             prompt: str,
             output_model: type[BaseModel],
             system_prompt: str | None = None,
+            log_message: str | None = None,
     ) -> BaseModel:
         return asyncio.run(
             self.async_prompt_pdf(
@@ -70,5 +84,6 @@ class LLMManager:
                 prompt,
                 output_model,
                 system_prompt,
+                log_message
             )
         )

@@ -76,13 +76,13 @@ class Publication(BaseModel):
     authors: List[str] = Field(default_factory=list, description="Authors listed for the publication")
     venue: Optional[str] = Field(None, description="Conference, journal, or publication venue")
     publisher: Optional[str] = Field(None, description="Publisher or publishing organization")
-    date: Optional[date] = Field(None, description="Publication date")
+    publication_date: Optional[date] = Field(None, description="Publication date")
     url: Optional[str] = Field(None, description="URL where the publication can be accessed")
 
 class Award(BaseModel):
     name: Optional[str] = Field(None, description="Award or honor name")
     issuer: Optional[str] = Field(None, description="Organization granting the award")
-    date: Optional[date] = Field(None, description="Date the award was received")
+    award_date: Optional[date] = Field(None, description="Date the award was received")
     description: Optional[str] = Field(None, description="Description or reason for receiving the award")
 
 class CustomSection(BaseModel):

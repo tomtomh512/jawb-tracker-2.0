@@ -34,6 +34,10 @@ class ResumeCreate(ResumeBase):
     custom_sections: list[CustomSectionCreate] = Field(default_factory=list)
 
 
+class ResumeTextCreate(BaseModel):
+    content: str
+
+
 class ResumeUpdate(ResumeBase):
     pass
 

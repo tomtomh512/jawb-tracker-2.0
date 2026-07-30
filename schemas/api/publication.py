@@ -8,7 +8,7 @@ class PublicationBase(BaseModel):
     title: str | None = None
     venue: str | None = None
     publisher: str | None = None
-    date: Optional[date] = None
+    publication_date: Optional[date] = None
     url: str | None = None
 
 

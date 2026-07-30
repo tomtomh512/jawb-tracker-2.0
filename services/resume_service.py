@@ -15,21 +15,28 @@ from models.resume import (
     Award,
     CustomSection,
 )
-from schemas.api.resume import ResumeCreate, ResumeUpdate
+from schemas.api.resume import ResumeCreate, ResumeUpdate, ResumeTextCreate
+from utils.resume_parser import parse_resume
 
 
 def get_resumes(db: Session) -> list[Resume]:
     return db.query(Resume).all()
 
 
-def get_resume(db: Session, resume_id: UUID) -> Resume:
+def get_resume(
+        db: Session,
+        resume_id: UUID
+) -> Resume:
     resume = db.query(Resume).filter(Resume.id == resume_id).first()
     if resume is None:
         raise HTTPException(status_code=404, detail="Resume not found")
     return resume
 
 
-def create_resume(db: Session, resume: ResumeCreate) -> Resume:
+def create_resume(
+        db: Session,
+        resume: ResumeCreate
+) -> Resume:
     db_resume = Resume(
         resumeName=resume.resumeName,
         name=resume.name,
@@ -59,7 +66,24 @@ def create_resume(db: Session, resume: ResumeCreate) -> Resume:
     return db_resume
 
 
-def update_resume(db: Session, resume_id: UUID, resume_update: ResumeUpdate) -> Resume:
+async def create_resume_from_text(
+        db: Session,
+        resume_text: ResumeTextCreate
+):
+    test = await parse_resume(resume_text.content)
+    return test
+
+
+
+def create_resume_from_pdf():
+    return "pdf"
+
+
+def update_resume(
+        db: Session,
+        resume_id: UUID,
+        resume_update: ResumeUpdate
+) -> Resume:
     db_resume = get_resume(db, resume_id)
     if db_resume is None:
         return None
@@ -78,7 +102,10 @@ def update_resume(db: Session, resume_id: UUID, resume_update: ResumeUpdate) -> 
     return db_resume
 
 
-def delete_resume(db: Session, resume_id: UUID) -> Resume:
+def delete_resume(
+        db: Session,
+        resume_id: UUID
+) -> Resume:
     db_resume = get_resume(db, resume_id)
 
     try:

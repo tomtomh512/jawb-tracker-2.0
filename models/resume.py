@@ -172,7 +172,7 @@ class Publication(Base):
     authors = Column(ARRAY(String), nullable=True)
     venue = Column(String, nullable=True)
     publisher = Column(String, nullable=True)
-    date = Column(Date, nullable=True)
+    publication_date = Column(Date, nullable=True)
     url = Column(String, nullable=True)
 
     resume = relationship(
@@ -189,7 +189,7 @@ class Award(Base):
 
     name = Column(String, nullable=True)
     issuer = Column(String, nullable=True)
-    date = Column(Date, nullable=True)
+    award_date = Column(Date, nullable=True)
     description = Column(String, nullable=True)
 
     resume = relationship(

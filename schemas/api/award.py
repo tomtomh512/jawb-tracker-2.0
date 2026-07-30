@@ -8,7 +8,7 @@ from datetime import date
 class AwardBase(BaseModel):
     name: str | None = None
     issuer: str | None = None
-    date: Optional[date] = None
+    award_date: Optional[date] = None
     description: str | None = None
 
 

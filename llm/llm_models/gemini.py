@@ -19,7 +19,7 @@ class Gemini:
 
         self.client = genai.Client(api_key=api_key)
 
-    def _log_usage(self, response):
+    def _log_usage(self, response, log_message):
         usage = response.usage_metadata
         if usage:
             print(
@@ -27,12 +27,15 @@ class Gemini:
                 f"output_tokens={usage.candidates_token_count} "
                 f"total_tokens={usage.total_token_count}"
             )
+        if log_message:
+            print(f"log_message={log_message}")
 
     async def prompt(
             self,
             prompt: str,
             output_model: type[BaseModel],
             system_prompt: str | None = None,
+            log_message: str | None = None
     ) -> BaseModel:
         response = await self.client.aio.models.generate_content(
             model=self.model,
@@ -45,7 +48,7 @@ class Gemini:
             )
         )
 
-        self._log_usage(response)
+        self._log_usage(response, log_message)
 
         return output_model.model_validate_json(response.text)
 
@@ -55,6 +58,7 @@ class Gemini:
             prompt: str,
             output_model: type[BaseModel],
             system_prompt: str | None = None,
+            log_message: str | None = None,
     ) -> BaseModel:
         pdf_path = Path(pdf_path)
 
@@ -74,6 +78,6 @@ class Gemini:
             ),
         )
 
-        self._log_usage(response)
+        self._log_usage(response, log_message)
 
         return output_model.model_validate_json(response.text)
