@@ -13,7 +13,7 @@ from models.resume import (
     Award,
     CustomSection,
 )
-from schemas.api.resume import ResumeCreate
+from schemas.api.resume import ResumeCreate, ResumeUpdate
 
 
 def get_resumes(db: Session):
@@ -49,9 +49,25 @@ def create_resume(db: Session, resume: ResumeCreate):
     return db_resume
 
 
-def update_resume():
-    pass
+def update_resume(db: Session, resume_id: UUID, resume_update: ResumeUpdate):
+    db_resume = get_resume(db, resume_id)
+    if db_resume is None:
+        return None
+
+    update_data = resume_update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_resume, field, value)
+
+    db.commit()
+    db.refresh(db_resume)
+    return db_resume
 
 
-def delete_resume():
-    pass
+def delete_resume(db: Session, resume_id: UUID):
+    db_resume = get_resume(db, resume_id)
+    if db_resume is None:
+        return None
+
+    db.delete(db_resume)
+    db.commit()
+    return db_resume
