@@ -6,7 +6,7 @@ from schemas.api.award import AwardResponse, AwardUpdate, AwardCreate
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services import award_service
+from services.resume_services import award_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/awards",

@@ -45,6 +45,7 @@ class ResumeUpdate(ResumeBase):
 
 class ResumeResponse(ResumeBase):
     id: UUID
+    is_main: bool
     updated_at: datetime | None = None
 
     educations: list[EducationResponse] = Field(default_factory=list)

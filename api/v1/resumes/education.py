@@ -6,7 +6,7 @@ from schemas.api.education import EducationResponse, EducationUpdate, EducationC
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services import education_service
+from services.resume_services import education_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/educations",

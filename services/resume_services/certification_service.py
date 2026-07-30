@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from models.resume import Certification
 from schemas.api.certification import CertificationUpdate, CertificationCreate
-from services.resume_service import get_resume
+from services.resume_services.resume_service import get_resume
 
 
 def get_certifications(

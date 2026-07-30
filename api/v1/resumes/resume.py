@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from schemas.api.resume import ResumeCreate, ResumeResponse, ResumeUpdate, ResumeTextCreate
 from database import get_db
 from sqlalchemy.orm import Session
-from services import resume_service
+from services.resume_services import resume_service
 
 router = APIRouter(
     prefix="/resumes",
@@ -62,3 +62,11 @@ def delete_resume(
 ):
     resume_service.delete_resume(db, resume_id)
     return None
+
+
+@router.patch("/{resume_id}/main", response_model=ResumeResponse)
+def set_main_resume(
+        resume_id: UUID,
+        db: Session = Depends(get_db)
+):
+    return resume_service.set_main_resume(db, resume_id)

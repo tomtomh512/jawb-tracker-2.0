@@ -6,7 +6,7 @@ from schemas.api.custom_section import CustomSectionResponse, CustomSectionUpdat
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services import custom_section_service
+from services.resume_services import custom_section_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/custom_sections",

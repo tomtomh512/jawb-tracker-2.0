@@ -6,7 +6,7 @@ from schemas.api.publication import PublicationResponse, PublicationUpdate, Publ
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services import publication_service
+from services.resume_services import publication_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/publications",

@@ -37,8 +37,11 @@ def create_resume(
         db: Session,
         resume: ResumeCreate
 ) -> Resume:
+    is_first_resume = db.query(Resume).first() is None
+
     db_resume = Resume(
         resumeName=resume.resumeName,
+        is_main=is_first_resume,
         name=resume.name,
         email=resume.email,
         phone=resume.phone,
@@ -70,15 +73,17 @@ async def create_resume_from_text(
         db: Session,
         resume: ResumeTextCreate
 ) -> Resume:
-    # db_resume_query = db.query(Resume).filter(Resume.resumeName == resume.resumeName)
-    #
-    # if db_resume_query:
-    #     raise HTTPException(status_code=400, detail="Resume name already exists")
+    existing = db.query(Resume).filter(Resume.resumeName == resume.resumeName).first()
+    if existing is not None:
+        raise HTTPException(status_code=400, detail="Resume name already exists")
+
+    is_first_resume = db.query(Resume).first() is None
 
     parsed_resume = await parse_resume_from_text(resume.content)
 
     db_resume = Resume(
         resumeName=resume.resumeName,
+        is_main=is_first_resume,
         name=parsed_resume.basics.name,
         email=parsed_resume.basics.email,
         phone=parsed_resume.basics.phone,
@@ -183,4 +188,23 @@ def delete_resume(
         db.rollback()
         raise HTTPException(status_code=400, detail="Could not delete resume") from None
 
+    return db_resume
+
+
+def set_main_resume(db: Session, resume_id: UUID) -> Resume:
+    db_resume = get_resume(db, resume_id)
+
+    try:
+        db.query(Resume).filter(
+            Resume.id != resume_id,
+            Resume.is_main.is_(True),
+        ).update({"is_main": False}, synchronize_session=False)
+
+        db_resume.is_main = True
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not set main resume") from None
+
+    db.refresh(db_resume)
     return db_resume

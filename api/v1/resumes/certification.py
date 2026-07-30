@@ -6,7 +6,7 @@ from schemas.api.certification import CertificationResponse, CertificationUpdate
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services import certification_service
+from services.resume_services import certification_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/certifications",

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from models.resume import Education
 from schemas.api.education import EducationUpdate, EducationCreate
-from services.resume_service import get_resume
+from services.resume_services.resume_service import get_resume
 
 
 def get_educations(

@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from database import Base
-from sqlalchemy import Integer, Column, String, Date, DateTime, Float, ForeignKey, Boolean, func, UUID
+from sqlalchemy import Integer, Column, String, Date, DateTime, Float, ForeignKey, Boolean, func, UUID, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -11,12 +11,15 @@ class Resume(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, index=True)
     resumeName = Column(String, index=True, unique=True)
+    is_main = Column(Boolean, nullable=False, default=False, server_default="false")
     name = Column(String, nullable=True)
     email = Column(String, nullable=True)
     phone = Column(String, nullable=True)
     location = Column(String, nullable=True)
     summary = Column(String, nullable=True)
     websites = Column(ARRAY(String), nullable=True)
+
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     educations = relationship(
         "Education",
@@ -66,7 +69,14 @@ class Resume(Base):
         cascade="all, delete-orphan",
     )
 
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    __table_args__ = (
+        Index(
+            "ix_resumes_only_one_main",
+            "is_main",
+            unique=True,
+            postgresql_where=is_main.is_(True),
+        ),
+    )
 
 
 class Education(Base):

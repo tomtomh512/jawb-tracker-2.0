@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from models.resume import Experience
 from schemas.api.experience import ExperienceUpdate, ExperienceCreate
-from services.resume_service import get_resume
+from services.resume_services.resume_service import get_resume
 
 
 def get_experiences(

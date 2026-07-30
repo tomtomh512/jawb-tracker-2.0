@@ -6,7 +6,7 @@ from schemas.api.experience import ExperienceResponse, ExperienceUpdate, Experie
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services import experience_service
+from services.resume_services import experience_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/experiences",

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from models.resume import SkillCategory
 from schemas.api.skill_category import SkillCategoryUpdate, SkillCategoryCreate
-from services.resume_service import get_resume
+from services.resume_services.resume_service import get_resume
 
 
 def get_skill_categories(
