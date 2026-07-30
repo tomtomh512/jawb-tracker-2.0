@@ -91,7 +91,7 @@ async def initialResumeScanPdf(
     )
 
 
-async def parse_resume(
+async def parse_resume_from_text(
         resume_text: str,
         llm_model: str = "gemini"
 ) -> ParsedResume:
@@ -103,7 +103,7 @@ async def parse_resume(
     return final_result
 
 
-async def parse_resume_pdf(
+async def parse_resume_from_pdf(
         pdf_path: str,
         llm_model: str = "gemini",
 ) -> ParsedResume:

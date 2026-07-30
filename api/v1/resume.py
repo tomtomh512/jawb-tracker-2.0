@@ -33,7 +33,7 @@ def create_resume(
     return resume_service.create_resume(db, resume)
 
 
-@router.post("/text")
+@router.post("/text", response_model=ResumeResponse)
 async def create_resume_from_text(
         resume: ResumeTextCreate,
         db: Session = Depends(get_db)
