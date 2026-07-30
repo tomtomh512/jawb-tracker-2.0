@@ -35,10 +35,10 @@ def create_resume(
 
 @router.post("/text")
 async def create_resume_from_text(
-        resume_text: ResumeTextCreate,
+        resume: ResumeTextCreate,
         db: Session = Depends(get_db)
 ):
-    return await resume_service.create_resume_from_text(db, resume_text)
+    return await resume_service.create_resume_from_text(db, resume)
 
 
 @router.post("/pdf")

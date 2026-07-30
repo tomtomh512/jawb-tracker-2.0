@@ -16,12 +16,12 @@ class Basics(BaseModel):
 class Classification(str, Enum):
     EDUCATION = "education"
     EXPERIENCE = "experience"
-    PROJECTS = "projects"
-    SKILLS = "skills"
+    PROJECT = "project"
+    SKILL_CATEGORY = "skill_category"
     CERTIFICATION = "certification"
     PUBLICATION = "publication"
-    AWARDS = "awards"
-    CUSTOM = "custom"
+    AWARD = "award"
+    CUSTOM_SECTION = "custom_section"
 
 class ResumeSection(BaseModel):
     name: Optional[str] = Field(None, description="The title or heading of the resume section (e.g., 'Education', 'Work Experience')")
@@ -118,7 +118,7 @@ class ParsedResume(BaseModel):
     education: List[Education] = Field(default_factory=list)
     experience: List[Experience] = Field(default_factory=list)
     projects: List[Project] = Field(default_factory=list)
-    skills: List[SkillCategory] = Field(default_factory=list)
+    skill_categories: List[SkillCategory] = Field(default_factory=list)
     certifications: List[Certification] = Field(default_factory=list)
     publications: List[Publication] = Field(default_factory=list)
     awards: List[Award] = Field(default_factory=list)

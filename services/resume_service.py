@@ -68,11 +68,37 @@ def create_resume(
 
 async def create_resume_from_text(
         db: Session,
-        resume_text: ResumeTextCreate
-):
-    test = await parse_resume(resume_text.content)
-    return test
+        resume: ResumeTextCreate
+) -> Resume:
+    parsed_resume = await parse_resume(resume.content)
 
+    db_resume = Resume(
+        resumeName=resume.resumeName,
+        name=parsed_resume.basics.name,
+        email=parsed_resume.basics.email,
+        phone=parsed_resume.basics.phone,
+        location=parsed_resume.basics.location,
+        summary=parsed_resume.basics.summary,
+        websites=parsed_resume.basics.websites,
+        education=[Education(**e.model_dump()) for e in parsed_resume.education],
+        experience=[Experience(**e.model_dump()) for e in parsed_resume.experience],
+        projects=[Project(**p.model_dump()) for p in parsed_resume.projects],
+        skill_categories=[SkillCategory(**s.model_dump()) for s in parsed_resume.skill_categories],
+        certifications=[Certification(**c.model_dump()) for c in parsed_resume.certifications],
+        publications=[Publication(**p.model_dump()) for p in parsed_resume.publications],
+        awards=[Award(**a.model_dump()) for a in parsed_resume.awards],
+        custom_sections=[CustomSection(**cs.model_dump()) for cs in parsed_resume.custom_sections],
+    )
+
+    db.add(db_resume)
+    try:
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not create resume") from None
+
+    db.refresh(db_resume)
+    return db_resume
 
 
 def create_resume_from_pdf():

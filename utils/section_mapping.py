@@ -19,28 +19,28 @@ SECTION_MAPPING = {
         "model": ExperienceOutput,
         "field": "experience",
     },
-    "projects": {
+    "project": {
         "model": ProjectOutput,
-        "field": "projects",
+        "field": "project",
     },
-    "skills": {
+    "skill_category": {
         "model": SkillOutput,
-        "field": "skills",
+        "field": "skill_category",
     },
     "certification": {
         "model": CertificationOutput,
-        "field": "certifications",
+        "field": "certification",
     },
     "publication": {
         "model": PublicationOutput,
-        "field": "publications",
+        "field": "publication",
     },
-    "awards": {
+    "award": {
         "model": AwardOutput,
-        "field": "awards",
+        "field": "award",
     },
-    "custom": {
+    "custom_section": {
         "model": CustomSectionOutput,
-        "field": "custom_sections",
+        "field": "custom_section",
     },
 }
