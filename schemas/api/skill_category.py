@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -15,6 +17,6 @@ class SkillCategoryUpdate(SkillCategoryBase):
 
 
 class SkillCategoryResponse(SkillCategoryBase):
-    id: int
+    id: UUID
 
     model_config = ConfigDict(from_attributes=True)

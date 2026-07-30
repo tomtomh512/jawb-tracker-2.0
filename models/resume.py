@@ -1,5 +1,7 @@
+from uuid import uuid4
+
 from database import Base
-from sqlalchemy import Integer, Column, String, Date, DateTime, Float, ForeignKey, Boolean
+from sqlalchemy import Integer, Column, String, Date, DateTime, Float, ForeignKey, Boolean, func, UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -7,7 +9,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 class Resume(Base):
     __tablename__ = "Resumes"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, index=True)
     resumeName = Column(String, index=True, unique=True)
     name = Column(String, nullable=True)
     email = Column(String, nullable=True)
@@ -64,26 +66,21 @@ class Resume(Base):
         cascade="all, delete-orphan",
     )
 
-    updated_at = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
 
 class Education(Base):
     __tablename__ = "Education"
 
-    id = Column(Integer, primary_key=True)
-
-    resume_id = Column(
-        Integer,
-        ForeignKey("Resumes.id"),
-        nullable=False
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     school = Column(String, nullable=True)
     degree = Column(String, nullable=True)
     field_of_study = Column(String, nullable=True)
     gpa = Column(Float, nullable=True)
     honors = Column(ARRAY(String), nullable=True)
-    courses = Column(ARRAY(String), nullable=True)
+    coursework = Column(ARRAY(String), nullable=True)
     start_date = Column(Date, nullable=True)
     end_date = Column(Date, nullable=True)
 
@@ -96,13 +93,8 @@ class Education(Base):
 class Experience(Base):
     __tablename__ = "Experience"
 
-    id = Column(Integer, primary_key=True)
-
-    resume_id = Column(
-        Integer,
-        ForeignKey("Resumes.id"),
-        nullable=False
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     title = Column(String, nullable=True)
     organization = Column(String, nullable=True)
@@ -121,13 +113,8 @@ class Experience(Base):
 class Project(Base):
     __tablename__ = "Projects"
 
-    id = Column(Integer, primary_key=True)
-
-    resume_id = Column(
-        Integer,
-        ForeignKey("Resumes.id"),
-        nullable=False
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     name = Column(String, nullable=True)
     description = Column(String, nullable=True)
@@ -144,13 +131,8 @@ class Project(Base):
 class SkillCategory(Base):
     __tablename__ = "SkillCategories"
 
-    id = Column(Integer, primary_key=True)
-
-    resume_id = Column(
-        Integer,
-        ForeignKey("Resumes.id"),
-        nullable=False
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     category = Column(String, nullable=True)
     skills = Column(ARRAY(String), nullable=True)
@@ -164,13 +146,8 @@ class SkillCategory(Base):
 class Certification(Base):
     __tablename__ = "Certifications"
 
-    id = Column(Integer, primary_key=True)
-
-    resume_id = Column(
-        Integer,
-        ForeignKey("Resumes.id"),
-        nullable=False
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     name = Column(String, nullable=True)
     issuer = Column(String, nullable=True)
@@ -188,13 +165,8 @@ class Certification(Base):
 class Publication(Base):
     __tablename__ = "Publications"
 
-    id = Column(Integer, primary_key=True)
-
-    resume_id = Column(
-        Integer,
-        ForeignKey("Resumes.id"),
-        nullable=False
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     title = Column(String, nullable=True)
     authors = Column(ARRAY(String), nullable=True)
@@ -213,12 +185,7 @@ class Award(Base):
     __tablename__ = "Awards"
 
     id = Column(Integer, primary_key=True)
-
-    resume_id = Column(
-        Integer,
-        ForeignKey("Resumes.id"),
-        nullable=False
-    )
+    resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     name = Column(String, nullable=True)
     issuer = Column(String, nullable=True)
@@ -235,12 +202,7 @@ class CustomSection(Base):
     __tablename__ = "CustomSections"
 
     id = Column(Integer, primary_key=True)
-
-    resume_id = Column(
-        Integer,
-        ForeignKey("Resumes.id"),
-        nullable=False
-    )
+    resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     title = Column(String, nullable=True)
     entries = Column(ARRAY(String), nullable=True)

@@ -1,5 +1,10 @@
-from fastapi import APIRouter
-from schemas.api.resume import ResumeCreate
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+from schemas.api.resume import ResumeCreate, ResumeResponse
+from database import get_db, engine, create_table, init_engine
+from sqlalchemy.orm import Session
+from services import resume_service
 
 router = APIRouter(
     prefix="/resumes",
@@ -7,21 +12,27 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-def get_resume():
-    return "get resume"
+@router.get("/", response_model=list[ResumeResponse])
+def get_resumes(db: Session = Depends(get_db)):
+    return resume_service.get_resumes(db)
+
+@router.get("/{resume_id}", response_model=ResumeResponse)
+def get_resume(resume_id: UUID, db: Session = Depends(get_db)):
+    return resume_service.get_resume(db, resume_id)
 
 @router.post("/")
-def upload_resume(data: ResumeCreate):
-    print(data.model_dump_json())
-    return {"message": "Resume received", "data": data}
+def create_resume(
+        resume: ResumeCreate,
+        db: Session = Depends(get_db)
+):
+    return resume_service.create_resume(db, resume)
 
 @router.post("/text")
-def upload_resume_text():
+def create_resume_text():
     return "post resume text"
 
 @router.post("/pdf")
-def upload_resume_pdf():
+def create_resume_pdf():
     return "post resume pdf"
 
 @router.patch("/{resume_id}")

@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -15,6 +17,6 @@ class CustomSectionUpdate(CustomSectionBase):
 
 
 class CustomSectionResponse(CustomSectionBase):
-    id: int
+    id: UUID
 
     model_config = ConfigDict(from_attributes=True)

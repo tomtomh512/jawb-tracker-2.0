@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 from datetime import date
@@ -22,6 +23,6 @@ class CertificationUpdate(CertificationBase):
 
 
 class CertificationResponse(CertificationBase):
-    id: int
+    id: UUID
 
     model_config = ConfigDict(from_attributes=True)

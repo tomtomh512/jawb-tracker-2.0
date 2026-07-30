@@ -1,3 +1,6 @@
+from datetime import datetime
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from schemas.api.award import AwardCreate, AwardResponse
@@ -36,7 +39,8 @@ class ResumeUpdate(ResumeBase):
 
 
 class ResumeResponse(ResumeBase):
-    id: int
+    id: UUID
+    updated_at: datetime | None = None
 
     education: list[EducationResponse] = Field(default_factory=list)
     experience: list[ExperienceResponse] = Field(default_factory=list)

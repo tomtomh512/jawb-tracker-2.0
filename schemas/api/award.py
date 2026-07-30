@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 from datetime import date
@@ -20,6 +21,6 @@ class AwardUpdate(AwardBase):
 
 
 class AwardResponse(AwardBase):
-    id: int
+    id: UUID
 
     model_config = ConfigDict(from_attributes=True)
