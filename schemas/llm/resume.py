@@ -99,7 +99,7 @@ class ProjectOutput(BaseModel):
     projects: List[Project] = Field(default_factory=list)
 
 class SkillOutput(BaseModel):
-    skills: List[SkillCategory] = Field(default_factory=list)
+    skill_categories: List[SkillCategory] = Field(default_factory=list)
 
 class CertificationOutput(BaseModel):
     certifications: List[Certification] = Field(default_factory=list)

@@ -39,7 +39,7 @@ async def parse_section(llm: LLMManager, section):
 
 async def parse_all_sections(llm: LLMManager, sections):
     tasks = [parse_section(llm, section) for section in sections]
-    return await asyncio.gather(*tasks)
+    return await asyncio.gather(*tasks, return_exceptions=True)
 
 
 async def assemble_parsed_resume(
