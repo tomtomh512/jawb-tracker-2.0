@@ -1,0 +1,25 @@
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
+from datetime import date
+
+
+class AwardBase(BaseModel):
+    name: str | None = None
+    issuer: str | None = None
+    date: Optional[date] = None
+    description: str | None = None
+
+
+class AwardCreate(AwardBase):
+    pass
+
+
+class AwardUpdate(AwardBase):
+    pass
+
+
+class AwardResponse(AwardBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
