@@ -90,10 +90,10 @@ class CustomSection(BaseModel):
     entries: List[str] = Field(default_factory=list, description="Raw text entries belonging to this custom section")
 
 class EducationOutput(BaseModel):
-    education: List[Education] = Field(default_factory=list)
+    educations: List[Education] = Field(default_factory=list)
 
 class ExperienceOutput(BaseModel):
-    experience: List[Experience] = Field(default_factory=list)
+    experiences: List[Experience] = Field(default_factory=list)
 
 class ProjectOutput(BaseModel):
     projects: List[Project] = Field(default_factory=list)
@@ -115,8 +115,8 @@ class CustomSectionOutput(BaseModel):
 
 class ParsedResume(BaseModel):
     basics: Optional[Basics] = None
-    education: List[Education] = Field(default_factory=list)
-    experience: List[Experience] = Field(default_factory=list)
+    educations: List[Education] = Field(default_factory=list)
+    experiences: List[Experience] = Field(default_factory=list)
     projects: List[Project] = Field(default_factory=list)
     skill_categories: List[SkillCategory] = Field(default_factory=list)
     certifications: List[Certification] = Field(default_factory=list)

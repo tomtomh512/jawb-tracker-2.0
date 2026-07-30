@@ -18,13 +18,13 @@ class Resume(Base):
     summary = Column(String, nullable=True)
     websites = Column(ARRAY(String), nullable=True)
 
-    education = relationship(
+    educations = relationship(
         "Education",
         back_populates="resume",
         cascade="all, delete-orphan",
     )
 
-    experience = relationship(
+    experiences = relationship(
         "Experience",
         back_populates="resume",
         cascade="all, delete-orphan",
@@ -70,7 +70,7 @@ class Resume(Base):
 
 
 class Education(Base):
-    __tablename__ = "Education"
+    __tablename__ = "Educations"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
@@ -86,12 +86,12 @@ class Education(Base):
 
     resume = relationship(
         "Resume",
-        back_populates="education"
+        back_populates="educations"
     )
 
 
 class Experience(Base):
-    __tablename__ = "Experience"
+    __tablename__ = "Experiences"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
@@ -106,7 +106,7 @@ class Experience(Base):
 
     resume = relationship(
         "Resume",
-        back_populates="experience"
+        back_populates="experiences"
     )
 
 

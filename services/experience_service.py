@@ -10,7 +10,7 @@ from schemas.api.experience import ExperienceUpdate, ExperienceCreate
 from services.resume_service import get_resume
 
 
-def get_all_experience(
+def get_experiences(
         db: Session,
         resume_id: UUID,
 ) -> list[Experience]:

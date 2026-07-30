@@ -13,11 +13,11 @@ from schemas.llm.resume import (
 SECTION_MAPPING = {
     "education": {
         "model": EducationOutput,
-        "field": "education",
+        "field": "educations",
     },
     "experience": {
         "model": ExperienceOutput,
-        "field": "experience",
+        "field": "experiences",
     },
     "project": {
         "model": ProjectOutput,

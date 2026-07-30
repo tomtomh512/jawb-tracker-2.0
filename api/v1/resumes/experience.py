@@ -9,21 +9,21 @@ from sqlalchemy.orm import Session
 from services import experience_service
 
 router = APIRouter(
-    prefix="/resumes/{resume_id}/experience",
-    tags=["experience"]
+    prefix="/resumes/{resume_id}/experiences",
+    tags=["experiences"]
 )
 
 
 @router.get("/", response_model=list[ExperienceResponse])
-def get_all_experience(
+def get_experiences(
         resume_id: UUID,
         db: Session = Depends(get_db)
 ):
-    return experience_service.get_all_experience(db, resume_id)
+    return experience_service.get_experiences(db, resume_id)
 
 
 @router.get("/{experience_id}", response_model=ExperienceResponse)
-def get_experience(
+def get_experiences(
         resume_id: UUID,
         experience_id: UUID,
         db: Session = Depends(get_db)

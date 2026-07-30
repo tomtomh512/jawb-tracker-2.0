@@ -10,7 +10,7 @@ from schemas.api.education import EducationUpdate, EducationCreate
 from services.resume_service import get_resume
 
 
-def get_all_education(
+def get_educations(
         db: Session,
         resume_id: UUID,
 ) -> list[Education]:

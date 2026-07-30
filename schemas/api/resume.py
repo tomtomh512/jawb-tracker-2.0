@@ -24,8 +24,8 @@ class ResumeBase(BaseModel):
 
 
 class ResumeCreate(ResumeBase):
-    education: list[EducationCreate] = Field(default_factory=list)
-    experience: list[ExperienceCreate] = Field(default_factory=list)
+    educations: list[EducationCreate] = Field(default_factory=list)
+    experiences: list[ExperienceCreate] = Field(default_factory=list)
     projects: list[ProjectCreate] = Field(default_factory=list)
     skill_categories: list[SkillCategoryCreate] = Field(default_factory=list)
     certifications: list[CertificationCreate] = Field(default_factory=list)
@@ -47,8 +47,8 @@ class ResumeResponse(ResumeBase):
     id: UUID
     updated_at: datetime | None = None
 
-    education: list[EducationResponse] = Field(default_factory=list)
-    experience: list[ExperienceResponse] = Field(default_factory=list)
+    educations: list[EducationResponse] = Field(default_factory=list)
+    experiences: list[ExperienceResponse] = Field(default_factory=list)
     projects: list[ProjectResponse] = Field(default_factory=list)
     skill_categories: list[SkillCategoryResponse] = Field(default_factory=list)
     certifications: list[CertificationResponse] = Field(default_factory=list)

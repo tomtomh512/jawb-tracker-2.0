@@ -9,17 +9,17 @@ from sqlalchemy.orm import Session
 from services import education_service
 
 router = APIRouter(
-    prefix="/resumes/{resume_id}/education",
-    tags=["education"]
+    prefix="/resumes/{resume_id}/educations",
+    tags=["educations"]
 )
 
 
 @router.get("/", response_model=list[EducationResponse])
-def get_all_education(
+def get_educations(
         resume_id: UUID,
         db: Session = Depends(get_db)
 ):
-    return education_service.get_all_education(db, resume_id)
+    return education_service.get_educations(db, resume_id)
 
 
 @router.get("/{education_id}", response_model=EducationResponse)
