@@ -23,7 +23,7 @@ def get_experiences(
 
 
 @router.get("/{experience_id}", response_model=ExperienceResponse)
-def get_experiences(
+def get_experience(
         resume_id: UUID,
         experience_id: UUID,
         db: Session = Depends(get_db)
