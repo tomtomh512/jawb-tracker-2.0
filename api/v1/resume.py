@@ -1,8 +1,8 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from schemas.api.resume import ResumeCreate, ResumeResponse, ResumeUpdate
-from database import get_db, engine, create_table, init_engine
+from database import get_db
 from sqlalchemy.orm import Session
 from services import resume_service
 
@@ -49,10 +49,7 @@ def update_resume(
         resume_update: ResumeUpdate,
         db: Session = Depends(get_db)
 ):
-    db_resume = resume_service.update_resume(db, resume_id, resume_update)
-    if db_resume is None:
-        raise HTTPException(status_code=404, detail="Resume not found")
-    return db_resume
+    return resume_service.update_resume(db, resume_id, resume_update)
 
 
 @router.delete("/{resume_id}", status_code=204)
@@ -60,7 +57,5 @@ def delete_resume(
         resume_id: UUID,
         db: Session = Depends(get_db)
 ):
-    db_resume = resume_service.delete_resume(db, resume_id)
-    if db_resume is None:
-        raise HTTPException(status_code=404, detail="Resume not found")
+    resume_service.delete_resume(db, resume_id)
     return None

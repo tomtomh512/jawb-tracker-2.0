@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from fastapi import HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import (
@@ -16,15 +18,18 @@ from models.resume import (
 from schemas.api.resume import ResumeCreate, ResumeUpdate
 
 
-def get_resumes(db: Session):
+def get_resumes(db: Session) -> list[Resume]:
     return db.query(Resume).all()
 
 
-def get_resume(db: Session, resume_id: UUID):
-    return db.query(Resume).filter(Resume.id == resume_id).first()
+def get_resume(db: Session, resume_id: UUID) -> Resume:
+    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+    if resume is None:
+        raise HTTPException(status_code=404, detail="Resume not found")
+    return resume
 
 
-def create_resume(db: Session, resume: ResumeCreate):
+def create_resume(db: Session, resume: ResumeCreate) -> Resume:
     db_resume = Resume(
         resumeName=resume.resumeName,
         name=resume.name,
@@ -44,12 +49,17 @@ def create_resume(db: Session, resume: ResumeCreate):
     )
 
     db.add(db_resume)
-    db.commit()
+    try:
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not create resume") from None
+
     db.refresh(db_resume)
     return db_resume
 
 
-def update_resume(db: Session, resume_id: UUID, resume_update: ResumeUpdate):
+def update_resume(db: Session, resume_id: UUID, resume_update: ResumeUpdate) -> Resume:
     db_resume = get_resume(db, resume_id)
     if db_resume is None:
         return None
@@ -58,16 +68,24 @@ def update_resume(db: Session, resume_id: UUID, resume_update: ResumeUpdate):
     for field, value in update_data.items():
         setattr(db_resume, field, value)
 
-    db.commit()
+    try:
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not update resume") from None
+
     db.refresh(db_resume)
     return db_resume
 
 
-def delete_resume(db: Session, resume_id: UUID):
+def delete_resume(db: Session, resume_id: UUID) -> Resume:
     db_resume = get_resume(db, resume_id)
-    if db_resume is None:
-        return None
 
-    db.delete(db_resume)
-    db.commit()
+    try:
+        db.delete(db_resume)
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not delete resume") from None
+
     return db_resume
