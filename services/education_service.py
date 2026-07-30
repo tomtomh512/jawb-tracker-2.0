@@ -92,6 +92,8 @@ def delete_education(
 ) -> Education:
     db_education = get_education(db, resume_id, education_id)
 
+    db_education.resume.updated_at = func.now()
+
     try:
         db.delete(db_education)
         db.commit()
