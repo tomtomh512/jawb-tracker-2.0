@@ -46,10 +46,9 @@ def create_skill_category(
 
     db_skill_category = SkillCategory(resume_id=resume_id, **skill_category.model_dump())
 
-    db.add(db_skill_category)
-    db_resume.updated_at = func.now()
-
     try:
+        db.add(db_skill_category)
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -73,9 +72,8 @@ def update_skill_category(
     for field, value in update_data.items():
         setattr(db_skill_category, field, value)
 
-    db_skill_category.resume.updated_at = func.now()
-
     try:
+        db_skill_category.resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -93,6 +91,7 @@ def delete_skill_category(
     db_skill_category = get_skill_category(db, resume_id, skill_category_id)
 
     try:
+        db_skill_category.resume.updated_at = func.now()
         db.delete(db_skill_category)
         db.commit()
     except SQLAlchemyError:

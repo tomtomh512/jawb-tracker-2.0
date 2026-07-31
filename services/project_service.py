@@ -46,10 +46,9 @@ def create_project(
 
     db_project = Project(resume_id=resume_id, **project.model_dump())
 
-    db.add(db_project)
-    db_resume.updated_at = func.now()
-
     try:
+        db.add(db_project)
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -73,9 +72,8 @@ def update_project(
     for field, value in update_data.items():
         setattr(db_project, field, value)
 
-    db_project.resume.updated_at = func.now()
-
     try:
+        db_project.resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -93,6 +91,7 @@ def delete_project(
     db_project = get_project(db, resume_id, project_id)
 
     try:
+        db_project.resume.updated_at = func.now()
         db.delete(db_project)
         db.commit()
     except SQLAlchemyError:

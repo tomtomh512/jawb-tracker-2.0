@@ -46,10 +46,9 @@ def create_certification(
 
     db_certification = Certification(resume_id=resume_id, **certification.model_dump())
 
-    db.add(db_certification)
-    db_resume.updated_at = func.now()
-
     try:
+        db.add(db_certification)
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -73,9 +72,8 @@ def update_certification(
     for field, value in update_data.items():
         setattr(db_certification, field, value)
 
-    db_certification.resume.updated_at = func.now()
-
     try:
+        db_certification.resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -93,6 +91,7 @@ def delete_certification(
     db_certification = get_certification(db, resume_id, certification_id)
 
     try:
+        db_certification.resume.updated_at = func.now()
         db.delete(db_certification)
         db.commit()
     except SQLAlchemyError:

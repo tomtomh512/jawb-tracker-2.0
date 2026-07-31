@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -22,8 +23,10 @@ def get_job_posting(
         job_posting_id: UUID,
 ) -> JobPosting:
     job_posting = db.query(JobPosting).filter(JobPosting.id == job_posting_id).first()
+
     if job_posting is None:
         raise HTTPException(status_code=404, detail="Job posting not found")
+
     return job_posting
 
 
@@ -33,8 +36,8 @@ def create_job_posting(
 ) -> JobPosting:
     db_job_posting = JobPosting(**job_posting_create.model_dump())
 
-    db.add(db_job_posting)
     try:
+        db.add(db_job_posting)
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -88,8 +91,8 @@ async def parse_job_posting(
         original=job_posting_content,
     )
 
-    db.add(db_job_posting)
     try:
+        db.add(db_job_posting)
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -113,6 +116,7 @@ def update_job_posting(
         setattr(db_job_posting, field, value)
 
     try:
+        db_job_posting.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -130,6 +134,7 @@ def update_job_posting_status(
     db_job_posting = get_job_posting(db, job_posting_id)
 
     try:
+        db_job_posting.updated_at = func.now()
         db_job_posting.status = status
         db.commit()
     except SQLAlchemyError:
@@ -163,6 +168,7 @@ async def update_job_posting_cover_letter(
     )
 
     try:
+        db_job_posting.updated_at = func.now()
         db_job_posting.cover_letter = cover_letter.content
         db.commit()
     except SQLAlchemyError:
@@ -221,6 +227,7 @@ async def update_job_posting_score(
     )
 
     try:
+        db_job_posting.updated_at = func.now()
         db_job_posting.rubric = db_rubric
         db.commit()
     except SQLAlchemyError:

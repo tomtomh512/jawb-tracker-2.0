@@ -46,10 +46,9 @@ def create_custom_section(
 
     db_custom_section = CustomSection(resume_id=resume_id, **custom_section.model_dump())
 
-    db.add(db_custom_section)
-    db_resume.updated_at = func.now()
-
     try:
+        db.add(db_custom_section)
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -73,9 +72,8 @@ def update_custom_section(
     for field, value in update_data.items():
         setattr(db_custom_section, field, value)
 
-    db_custom_section.resume.updated_at = func.now()
-
     try:
+        db_custom_section.resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -93,6 +91,7 @@ def delete_custom_section(
     db_custom_section = get_custom_section(db, resume_id, custom_section_id)
 
     try:
+        db_custom_section.resume.updated_at = func.now()
         db.delete(db_custom_section)
         db.commit()
     except SQLAlchemyError:

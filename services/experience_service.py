@@ -46,10 +46,9 @@ def create_experience(
 
     db_experience = Experience(resume_id=resume_id, **experience.model_dump())
 
-    db.add(db_experience)
-    db_resume.updated_at = func.now()
-
     try:
+        db.add(db_experience)
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -73,9 +72,8 @@ def update_experience(
     for field, value in update_data.items():
         setattr(db_experience, field, value)
 
-    db_experience.resume.updated_at = func.now()
-
     try:
+        db_experience.resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -93,6 +91,7 @@ def delete_experience(
     db_experience = get_experience(db, resume_id, experience_id)
 
     try:
+        db_experience.resume.updated_at = func.now()
         db.delete(db_experience)
         db.commit()
     except SQLAlchemyError:

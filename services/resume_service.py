@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException, UploadFile
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -28,8 +29,10 @@ def get_resume(
         resume_id: UUID
 ) -> Resume:
     db_resume = db.query(Resume).filter(Resume.id == resume_id).first()
+
     if db_resume is None:
         raise HTTPException(status_code=404, detail="Resume not found")
+
     return db_resume
 
 
@@ -58,8 +61,8 @@ def create_resume(
         custom_sections=[CustomSection(**cs.model_dump()) for cs in resume_create.custom_sections],
     )
 
-    db.add(db_resume)
     try:
+        db.add(db_resume)
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -101,8 +104,8 @@ async def parse_resume_text(
         custom_sections=[CustomSection(**cs.model_dump()) for cs in parsed_resume.custom_sections],
     )
 
-    db.add(db_resume)
     try:
+        db.add(db_resume)
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -134,6 +137,7 @@ def update_resume(
         setattr(db_resume, field, value)
 
     try:
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -150,12 +154,15 @@ def set_main_resume(
     db_resume = get_resume(db, resume_id)
 
     try:
+        db_resume.updated_at = func.now()
+
         db.query(Resume).filter(
             Resume.id != resume_id,
             Resume.is_main.is_(True),
         ).update({"is_main": False}, synchronize_session=False)
 
         db_resume.is_main = True
+
         db.commit()
     except SQLAlchemyError:
         db.rollback()

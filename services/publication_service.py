@@ -46,10 +46,9 @@ def create_publication(
 
     db_publication = Publication(resume_id=resume_id, **publication.model_dump())
 
-    db.add(db_publication)
-    db_resume.updated_at = func.now()
-
     try:
+        db.add(db_publication)
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -73,9 +72,8 @@ def update_publication(
     for field, value in update_data.items():
         setattr(db_publication, field, value)
 
-    db_publication.resume.updated_at = func.now()
-
     try:
+        db_publication.resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -93,6 +91,7 @@ def delete_publication(
     db_publication = get_publication(db, resume_id, publication_id)
 
     try:
+        db_publication.resume.updated_at = func.now()
         db.delete(db_publication)
         db.commit()
     except SQLAlchemyError:

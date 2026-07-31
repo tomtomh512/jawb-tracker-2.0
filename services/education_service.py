@@ -46,10 +46,9 @@ def create_education(
 
     db_education = Education(resume_id=resume_id, **education.model_dump())
 
-    db.add(db_education)
-    db_resume.updated_at = func.now()
-
     try:
+        db.add(db_education)
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -73,9 +72,8 @@ def update_education(
     for field, value in update_data.items():
         setattr(db_education, field, value)
 
-    db_education.resume.updated_at = func.now()
-
     try:
+        db_education.resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -95,6 +93,7 @@ def delete_education(
     db_education.resume.updated_at = func.now()
 
     try:
+        db_education.resume.updated_at = func.now()
         db.delete(db_education)
         db.commit()
     except SQLAlchemyError:

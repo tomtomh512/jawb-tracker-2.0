@@ -46,10 +46,9 @@ def create_award(
 
     db_award = Award(resume_id=resume_id, **award.model_dump())
 
-    db.add(db_award)
-    db_resume.updated_at = func.now()
-
     try:
+        db.add(db_award)
+        db_resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -73,9 +72,8 @@ def update_award(
     for field, value in update_data.items():
         setattr(db_award, field, value)
 
-    db_award.resume.updated_at = func.now()
-
     try:
+        db_award.resume.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -93,6 +91,7 @@ def delete_award(
     db_award = get_award(db, resume_id, award_id)
 
     try:
+        db_award.resume.updated_at = func.now()
         db.delete(db_award)
         db.commit()
     except SQLAlchemyError:
