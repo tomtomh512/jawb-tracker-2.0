@@ -35,7 +35,7 @@ class ResumeCreate(ResumeBase):
 
 
 class ResumeTextCreate(BaseModel):
-    resumeName: str
+    resume_name: str
     content: str
 
 

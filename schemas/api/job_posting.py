@@ -100,3 +100,7 @@ class CoverLetter(BaseModel):
 class ParseJobPostingCreate(BaseModel):
     link: str
     content: str
+
+
+class JobPostingScoreCreate(BaseModel):
+    resume_id: UUID

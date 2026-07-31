@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from models import JobPosting
 from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate, \
-    JobPostingCoverLetterCreate, JobPostingResponse, ParseJobPostingCreate
+    JobPostingCoverLetterCreate, JobPostingResponse, ParseJobPostingCreate, JobPostingScoreCreate
 from schemas.api.resume_schemas.resume import ResumeResponse
 from services.resume_services.resume_service import get_resume
 from utils.cover_letter_generator import generate_cover_letter
@@ -46,15 +46,16 @@ def create_job_posting(
 
 async def parse_job_posting(
         db: Session,
-        parse_job_posting_create: ParseJobPostingCreate,
+        job_posting_link: str,
+        job_posting_content: str
 ) -> JobPosting:
     parsed_job_posting = await parse_job_posting_from_text(
-        job_posting=parse_job_posting_create.content,
+        job_posting=job_posting_content,
         llm_model="gemini"
     )
 
     db_job_posting = JobPosting(
-        link=parse_job_posting_create.link,
+        link=job_posting_link,
 
         title=parsed_job_posting.title,
         company=parsed_job_posting.company,
@@ -84,7 +85,7 @@ async def parse_job_posting(
         visa_sponsorship=parsed_job_posting.visa_sponsorship,
         clearance_required=parsed_job_posting.clearance_required,
 
-        original=parse_job_posting_create.content,
+        original=job_posting_content,
     )
 
     db.add(db_job_posting)
@@ -96,6 +97,14 @@ async def parse_job_posting(
 
     db.refresh(db_job_posting)
     return db_job_posting
+
+
+def create_job_posting_score(
+        db: Session,
+        job_posting_id: UUID,
+        resume_id: UUID,
+) -> JobPosting:
+    return None
 
 
 def update_job_posting(
@@ -140,12 +149,12 @@ def delete_job_posting(
 def set_job_posting_status(
         db: Session,
         job_posting_id: UUID,
-        payload: JobPostingStatusUpdate
+        status: str
 ) -> JobPosting:
     db_job_posting = get_job_posting(db, job_posting_id)
 
     try:
-        db_job_posting.status = payload.status
+        db_job_posting.status = status
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -158,9 +167,10 @@ def set_job_posting_status(
 async def create_job_posting_cover_letter(
         db: Session,
         job_posting_id: UUID,
-        payload: JobPostingCoverLetterCreate,
+        resume_id: UUID,
+        prompt: str,
 ) -> JobPosting:
-    db_resume = get_resume(db, payload.resume_id)
+    db_resume = get_resume(db, resume_id)
     db_job_posting = get_job_posting(db, job_posting_id)
 
     resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
@@ -173,7 +183,7 @@ async def create_job_posting_cover_letter(
         resume=resume_text,
         job_posting=job_posting_text,
         llm_model="gemini",
-        custom_prompt=payload.prompt
+        custom_prompt=prompt
     )
 
     try:

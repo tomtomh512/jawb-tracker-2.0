@@ -34,11 +34,15 @@ def create_resume(
 
 
 @router.post("/parse", response_model=ResumeResponse)
-async def parse_resume_from_text(
+async def parse_resume_text(
         resume_text_create: ResumeTextCreate,
         db: Session = Depends(get_db)
 ):
-    return await resume_service.parse_resume_from_text(db, resume_text_create)
+    return await resume_service.parse_resume_text(
+        db,
+        resume_text_create.content,
+        resume_text_create.resume_name,
+    )
 
 
 # @router.post("/parsePdf")
