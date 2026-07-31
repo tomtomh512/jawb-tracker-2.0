@@ -1,6 +1,5 @@
-from datetime import datetime, date
+from datetime import datetime
 from enum import Enum
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -68,6 +67,9 @@ class JobPostingCreate(JobPosting):
 
 class JobPostingUpdate(JobPosting):
     pass
+
+class JobPostingStatusUpdate(BaseModel):
+    status: JobApplicationStatus
 
 class JobPostingResponse(JobPosting):
     id: UUID

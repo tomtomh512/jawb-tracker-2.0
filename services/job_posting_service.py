@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models import JobPosting
-from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate
+from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate
 
 
 def get_job_postings(db: Session) -> list[JobPosting]:
@@ -75,4 +75,22 @@ def delete_job_posting(
         db.rollback()
         raise HTTPException(status_code=400, detail="Could not delete job posting") from None
 
+    return db_job_posting
+
+
+def set_job_posting_status(
+        db: Session,
+        job_posting_id: UUID,
+        payload: JobPostingStatusUpdate
+) -> JobPosting:
+    db_job_posting = get_job_posting(db, job_posting_id)
+
+    try:
+        db_job_posting.status = payload.status
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not job posting status") from None
+
+    db.refresh(db_job_posting)
     return db_job_posting
