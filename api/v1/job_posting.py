@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from schemas.api.job_posting import JobPostingResponse, JobPostingUpdate, JobPostingCreate, \
-    JobPostingStatusUpdate
+    JobPostingStatusUpdate, JobPostingCoverLetterCreate
 from services import job_posting_service
 
 router = APIRouter(
@@ -45,11 +45,6 @@ def create_job_posting_score():
     pass
 
 
-@router.post("/{job_posting_id}/cover-letter")
-def create_job_posting_cover_letter():
-    pass
-
-
 @router.patch("/{job_posting_id}")
 def update_job_posting(
         job_posting_id: UUID,
@@ -75,3 +70,12 @@ def set_job_posting_status(
         db: Session = Depends(get_db),
 ):
     return job_posting_service.set_job_posting_status(db, job_posting_id, payload)
+
+
+@router.patch("/{job_posting_id}/cover-letter")
+async def create_job_posting_cover_letter(
+        job_posting_id: UUID,
+        payload: JobPostingCoverLetterCreate,
+        db: Session = Depends(get_db),
+):
+    return await job_posting_service.create_job_posting_cover_letter(db, job_posting_id, payload)

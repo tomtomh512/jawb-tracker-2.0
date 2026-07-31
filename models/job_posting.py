@@ -75,6 +75,8 @@ class JobPosting(Base):
     equity = Column(Boolean, nullable=True)
     visa_sponsorship = Column(Boolean, nullable=True)
     clearance_required = Column(Boolean, nullable=True)
+    original = Column(String, nullable=True)
+    notes = Column(String, nullable=True)
     cover_letter = Column(String, nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

@@ -60,6 +60,9 @@ class JobPosting(BaseModel):
     equity: bool | None = None
     visa_sponsorship: bool | None = None
     clearance_required: bool | None = None
+    original: str | None = None
+    notes: str | None = None
+    cover_letter: str | None = None
 
 
 class JobPostingCreate(JobPosting):
@@ -71,6 +74,10 @@ class JobPostingUpdate(JobPosting):
 class JobPostingStatusUpdate(BaseModel):
     status: JobApplicationStatus
 
+class JobPostingCoverLetterCreate(BaseModel):
+    resume_id: UUID
+    prompt: str | None = None
+
 class JobPostingResponse(JobPosting):
     id: UUID
     status: JobApplicationStatus
@@ -80,3 +87,6 @@ class JobPostingResponse(JobPosting):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class CoverLetter(BaseModel):
+    content: str

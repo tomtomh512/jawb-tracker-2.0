@@ -5,7 +5,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models import JobPosting
-from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate
+from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate, \
+    JobPostingCoverLetterCreate, JobPostingResponse
+from schemas.api.resume_schemas.resume import ResumeResponse
+from services.resume_services.resume_service import get_resume
+from utils.generate_cover_letter import generate_cover_letter
 
 
 def get_job_postings(db: Session) -> list[JobPosting]:
@@ -90,7 +94,39 @@ def set_job_posting_status(
         db.commit()
     except SQLAlchemyError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="Could not job posting status") from None
+        raise HTTPException(status_code=400, detail="Could not set status") from None
+
+    db.refresh(db_job_posting)
+    return db_job_posting
+
+
+async def create_job_posting_cover_letter(
+        db: Session,
+        job_posting_id: UUID,
+        payload: JobPostingCoverLetterCreate,
+) -> JobPosting:
+    db_resume = get_resume(db, payload.resume_id)
+    db_job_posting = get_job_posting(db, job_posting_id)
+
+    resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
+    job_posting_text = JobPostingResponse.model_validate(db_job_posting).model_dump_json(indent=2)
+
+    if db_job_posting.original:
+        job_posting_text = db_job_posting.original
+
+    cover_letter = await generate_cover_letter(
+        resume=resume_text,
+        job_posting=job_posting_text,
+        llm_model="gemini",
+        custom_prompt=payload.prompt
+    )
+
+    try:
+        db_job_posting.cover_letter = cover_letter.content
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not set cover letter") from None
 
     db.refresh(db_job_posting)
     return db_job_posting

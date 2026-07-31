@@ -51,6 +51,3 @@ class ParsedJobPosting(BaseModel):
     compensation: Optional[Compensation] = Field(None, description="Compensation details for the position")
     visa_sponsorship: Optional[bool] = Field(None, description="Whether visa sponsorship is available")
     clearance_required: Optional[bool] = Field(None, description="Whether a security clearance is required")
-
-class CoverLetter(BaseModel):
-    content: Optional[str]
