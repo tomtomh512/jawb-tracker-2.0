@@ -54,8 +54,6 @@ class ScoredRubricItem(BaseModel):
 
 
 class ScoredRubric(BaseModel):
-    job_title: Optional[str] = None
-    company: Optional[str] = None
     overall_score: float
     items: List[ScoredRubricItem] = Field(default_factory=list)
     missing_required: List[str] = Field(default_factory=list)

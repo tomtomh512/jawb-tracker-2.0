@@ -47,7 +47,7 @@ async def parse_job_posting(
     )
 
 
-@router.post("/{job_posting_id}/score", response_model=JobPostingResponse)
+@router.patch("/{job_posting_id}/score", response_model=JobPostingResponse)
 def create_job_posting_score(
         job_posting_id: UUID,
         job_posting_score_create: JobPostingScoreCreate,

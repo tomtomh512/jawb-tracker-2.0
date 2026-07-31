@@ -8,9 +8,12 @@ from models import JobPosting
 from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate, \
     JobPostingCoverLetterCreate, JobPostingResponse, ParseJobPostingCreate, JobPostingScoreCreate
 from schemas.api.resume_schemas.resume import ResumeResponse
+from schemas.llm.job_posting import ParsedJobPosting
+from schemas.llm.resume import ParsedResume
 from services.resume_services.resume_service import get_resume
 from utils.cover_letter_generator import generate_cover_letter
 from utils.job_posting_parser import parse_job_posting_from_text
+from utils.score import score_resume
 
 
 def get_job_postings(db: Session) -> list[JobPosting]:
@@ -104,7 +107,30 @@ def create_job_posting_score(
         job_posting_id: UUID,
         resume_id: UUID,
 ) -> JobPosting:
-    return None
+    db_resume = get_resume(db, resume_id)
+    db_job_posting = get_job_posting(db, job_posting_id)
+
+    resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
+    job_posting_text = JobPostingResponse.model_validate(db_job_posting).model_dump_json(indent=2)
+
+    if db_job_posting.original:
+        job_posting_text = db_job_posting.original
+
+    scored_rubric = score_resume(
+        resume=resume_text,
+        job_posting=job_posting_text,
+        llm_model="gemini"
+    )
+
+    try:
+        db_job_posting.rubric = scored_rubric
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not set rubric") from None
+
+    db.refresh(db_job_posting)
+    return db_job_posting
 
 
 def update_job_posting(
