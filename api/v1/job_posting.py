@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from database import get_db
-from schemas.api.job_posting import JobPostingResponse, JobPostingUpdate
+from schemas.api.job_posting import JobPostingResponse, JobPostingUpdate, JobPostingCreate
 from services import job_posting_service
 
 router = APIRouter(
@@ -24,9 +24,12 @@ def get_job_posting(
 ):
     return job_posting_service.get_job_posting(db, job_posting_id)
 
-@router.post("/")
-def create_job_posting():
-    pass
+@router.post("/", response_model=JobPostingResponse)
+def create_job_posting(
+        job_posting_create: JobPostingCreate,
+        db: Session = Depends(get_db),
+):
+    return job_posting_service.create_job_posting(db, job_posting_create)
 
 @router.post("/parse")
 def parse_job_posting():

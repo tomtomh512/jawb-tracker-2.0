@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -56,12 +57,10 @@ class JobPosting(BaseModel):
     max_salary: int | None = None
     currency: str | None = None
     period: str | None = None
-    start_date: str | None = None
     bonus: bool | None = None
     equity: bool | None = None
     visa_sponsorship: bool | None = None
     clearance_required: bool | None = None
-    cover_letter: str | None = None
 
 
 class JobPostingCreate(JobPosting):

@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models import JobPosting
-from schemas.api.job_posting import JobPostingUpdate
+from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate
 
 
 def get_job_postings(db: Session) -> list[JobPosting]:
@@ -22,8 +22,21 @@ def get_job_posting(
     return job_posting
 
 
-def create_job_posting():
-    pass
+def create_job_posting(
+        db: Session,
+        job_posting_create: JobPostingCreate,
+) -> JobPosting:
+    db_job_posting = JobPosting(**job_posting_create.model_dump())
+
+    db.add(db_job_posting)
+    try:
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not create job posting") from None
+
+    db.refresh(db_job_posting)
+    return db_job_posting
 
 
 def update_job_posting(
