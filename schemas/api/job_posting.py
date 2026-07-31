@@ -72,6 +72,10 @@ class JobPostingCreate(JobPosting):
 class ParseJobPostingCreate(BaseModel):
     link: str
     content: str
+    resume_id: UUID | None = None,
+    include_cover_letter: bool = False,
+    include_score: bool = False,
+    cover_letter_prompt: str | None = None
 
 
 class JobPostingUpdate(JobPosting):

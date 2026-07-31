@@ -44,6 +44,10 @@ async def parse_job_posting(
         db,
         parse_job_posting_create.link,
         parse_job_posting_create.content,
+        parse_job_posting_create.resume_id,
+        parse_job_posting_create.include_cover_letter,
+        parse_job_posting_create.include_score,
+        parse_job_posting_create.cover_letter_prompt,
     )
 
 

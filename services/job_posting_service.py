@@ -1,3 +1,4 @@
+import asyncio
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -50,8 +51,18 @@ def create_job_posting(
 async def parse_job_posting(
         db: Session,
         job_posting_link: str,
-        job_posting_content: str
+        job_posting_content: str,
+        resume_id: UUID | None = None,
+        include_cover_letter: bool = False,
+        include_score: bool = False,
+        cover_letter_prompt: str | None = None,
 ) -> JobPosting:
+    if (include_cover_letter or include_score) and resume_id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="resume_id is required to generate a cover letter or score",
+        )
+
     parsed_job_posting = await parse_job_posting_from_text(
         job_posting=job_posting_content,
         llm_model="gemini"
@@ -99,6 +110,74 @@ async def parse_job_posting(
         raise HTTPException(status_code=400, detail="Could not create job posting") from None
 
     db.refresh(db_job_posting)
+
+    if include_cover_letter or include_score:
+        db_resume = get_resume(db, resume_id)
+
+        resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
+        job_posting_text = JobPostingResponse.model_validate(db_job_posting).model_dump_json(indent=2)
+        if db_job_posting.original:
+            job_posting_text = db_job_posting.original
+
+        tasks = {}
+        if include_cover_letter:
+            tasks["cover_letter"] = generate_cover_letter(
+                resume=resume_text,
+                job_posting=job_posting_text,
+                llm_model="gemini",
+                custom_prompt=cover_letter_prompt,
+            )
+        if include_score:
+            tasks["score"] = score_resume(
+                resume=resume_text,
+                job_posting=job_posting_text,
+                llm_model="gemini",
+            )
+
+        results = await asyncio.gather(*tasks.values())
+        results_by_key = dict(zip(tasks.keys(), results))
+
+        try:
+            if "cover_letter" in results_by_key:
+                db_job_posting.cover_letter = results_by_key["cover_letter"].content
+
+            if "score" in results_by_key:
+                scored_rubric = results_by_key["score"]
+                db_job_posting.rubric = Rubric(
+                    resume_id=resume_id,
+                    job_posting_id=db_job_posting.id,
+                    job_title=db_job_posting.title,
+                    company=db_job_posting.company,
+                    overall_score=scored_rubric.overall_score,
+                    missing_required=scored_rubric.missing_required,
+                    strengths=scored_rubric.strengths,
+                    weaknesses=scored_rubric.weaknesses,
+                    items=[
+                        RubricItem(
+                            name=item.name,
+                            description=item.description,
+                            importance=item.importance,
+                            required=item.required,
+                            weight=item.weight,
+                            score=item.score,
+                            weighted_score=item.weighted_score,
+                            reasoning=item.reasoning,
+                            evidence=item.evidence,
+                            strengths=item.strengths,
+                            weaknesses=item.weaknesses,
+                        )
+                        for item in scored_rubric.items
+                    ],
+                )
+
+            db_job_posting.updated_at = func.now()
+            db.commit()
+        except SQLAlchemyError:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Could not save generated content") from None
+
+        db.refresh(db_job_posting)
+
     return db_job_posting
 
 
