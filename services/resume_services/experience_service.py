@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Experience
-from schemas.api.experience import ExperienceUpdate, ExperienceCreate
+from schemas.api.resume_schemas.experience import ExperienceUpdate, ExperienceCreate
 from services.resume_services.resume_service import get_resume
 
 

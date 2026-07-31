@@ -15,7 +15,7 @@ from models.resume import (
     Award,
     CustomSection,
 )
-from schemas.api.resume import ResumeCreate, ResumeUpdate, ResumeTextCreate
+from schemas.api.resume_schemas.resume import ResumeCreate, ResumeUpdate, ResumeTextCreate
 from utils.resume_parser import parse_resume_from_text, parse_resume_from_pdf
 
 

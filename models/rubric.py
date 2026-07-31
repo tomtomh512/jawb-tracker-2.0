@@ -64,12 +64,9 @@ class RubricItem(Base):
     importance = Column(Integer, nullable=False)
     required = Column(Boolean, nullable=False)
     weight = Column(Float, nullable=False)
-
     score = Column(Float, nullable=False)
     weighted_score = Column(Float, nullable=False)
-
     reasoning = Column(String, nullable=False)
-
     evidence = Column(ARRAY(String), default=list)
     strengths = Column(ARRAY(String), default=list)
     weaknesses = Column(ARRAY(String), default=list)

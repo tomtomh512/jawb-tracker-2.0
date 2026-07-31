@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.publication import PublicationResponse, PublicationUpdate, PublicationCreate
+from schemas.api.resume_schemas.publication import PublicationResponse, PublicationUpdate, PublicationCreate
 from database import get_db
 from sqlalchemy.orm import Session
 

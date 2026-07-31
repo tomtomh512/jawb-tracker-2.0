@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.experience import ExperienceResponse, ExperienceUpdate, ExperienceCreate
+from schemas.api.resume_schemas.experience import ExperienceResponse, ExperienceUpdate, ExperienceCreate
 from database import get_db
 from sqlalchemy.orm import Session
 

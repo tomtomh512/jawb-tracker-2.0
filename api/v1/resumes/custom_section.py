@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.custom_section import CustomSectionResponse, CustomSectionUpdate, CustomSectionCreate
+from schemas.api.resume_schemas.custom_section import CustomSectionResponse, CustomSectionUpdate, CustomSectionCreate
 from database import get_db
 from sqlalchemy.orm import Session
 

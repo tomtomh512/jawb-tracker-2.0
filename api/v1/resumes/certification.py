@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.certification import CertificationResponse, CertificationUpdate, CertificationCreate
+from schemas.api.resume_schemas.certification import CertificationResponse, CertificationUpdate, CertificationCreate
 from database import get_db
 from sqlalchemy.orm import Session
 

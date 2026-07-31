@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Award
-from schemas.api.award import AwardUpdate, AwardCreate
+from schemas.api.resume_schemas.award import AwardUpdate, AwardCreate
 from services.resume_services.resume_service import get_resume
 
 

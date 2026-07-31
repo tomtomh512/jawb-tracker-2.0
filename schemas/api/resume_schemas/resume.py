@@ -3,14 +3,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from schemas.api.award import AwardCreate, AwardResponse
-from schemas.api.certification import CertificationCreate, CertificationResponse
-from schemas.api.custom_section import CustomSectionCreate, CustomSectionResponse
-from schemas.api.education import EducationCreate, EducationResponse
-from schemas.api.experience import ExperienceCreate, ExperienceResponse
-from schemas.api.project import ProjectCreate, ProjectResponse
-from schemas.api.publication import PublicationCreate, PublicationResponse
-from schemas.api.skill_category import SkillCategoryCreate, SkillCategoryResponse
+from schemas.api.resume_schemas.award import AwardCreate, AwardResponse
+from schemas.api.resume_schemas.certification import CertificationCreate, CertificationResponse
+from schemas.api.resume_schemas.custom_section import CustomSectionCreate, CustomSectionResponse
+from schemas.api.resume_schemas.education import EducationCreate, EducationResponse
+from schemas.api.resume_schemas.experience import ExperienceCreate, ExperienceResponse
+from schemas.api.resume_schemas.project import ProjectCreate, ProjectResponse
+from schemas.api.resume_schemas.publication import PublicationCreate, PublicationResponse
+from schemas.api.resume_schemas.skill_category import SkillCategoryCreate, SkillCategoryResponse
 
 
 class ResumeBase(BaseModel):
@@ -46,7 +46,7 @@ class ResumeUpdate(ResumeBase):
 class ResumeResponse(ResumeBase):
     id: UUID
     is_main: bool
-    updated_at: datetime | None = None
+    updated_at: datetime
 
     educations: list[EducationResponse] = Field(default_factory=list)
     experiences: list[ExperienceResponse] = Field(default_factory=list)

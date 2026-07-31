@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.education import EducationResponse, EducationUpdate, EducationCreate
+from schemas.api.resume_schemas.education import EducationResponse, EducationUpdate, EducationCreate
 from database import get_db
 from sqlalchemy.orm import Session
 

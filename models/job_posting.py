@@ -43,7 +43,11 @@ class JobPosting(Base):
 
     link = Column(String, nullable=True)
     status = Column(
-        SQLEnum(JobApplicationStatus, name="job_application_status_enum"),
+        SQLEnum(
+            JobApplicationStatus,
+            name="job_application_status_enum",
+            values_callable=lambda enum: [e.value for e in enum],
+        ),
         nullable=False,
         default=JobApplicationStatus.APPLIED,
         server_default=JobApplicationStatus.APPLIED.value,
@@ -76,8 +80,9 @@ class JobPosting(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    rubrics = relationship(
+    rubric = relationship(
         "Rubric",
         back_populates="job_posting",
-        cascade="all",
+        uselist=False,
+        cascade="all, delete-orphan",
     )

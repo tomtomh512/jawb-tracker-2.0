@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Publication
-from schemas.api.publication import PublicationUpdate, PublicationCreate
+from schemas.api.resume_schemas.publication import PublicationUpdate, PublicationCreate
 from services.resume_services.resume_service import get_resume
 
 

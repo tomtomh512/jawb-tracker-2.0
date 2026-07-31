@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.skill_category import SkillCategoryResponse, SkillCategoryUpdate, SkillCategoryCreate
+from schemas.api.resume_schemas.skill_category import SkillCategoryResponse, SkillCategoryUpdate, SkillCategoryCreate
 from database import get_db
 from sqlalchemy.orm import Session
 

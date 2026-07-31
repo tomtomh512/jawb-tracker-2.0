@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.award import AwardResponse, AwardUpdate, AwardCreate
+from schemas.api.resume_schemas.award import AwardResponse, AwardUpdate, AwardCreate
 from database import get_db
 from sqlalchemy.orm import Session
 

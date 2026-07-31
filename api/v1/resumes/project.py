@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.project import ProjectResponse, ProjectUpdate, ProjectCreate
+from schemas.api.resume_schemas.project import ProjectResponse, ProjectUpdate, ProjectCreate
 from database import get_db
 from sqlalchemy.orm import Session
 

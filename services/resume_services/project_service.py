@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Project
-from schemas.api.project import ProjectUpdate, ProjectCreate
+from schemas.api.resume_schemas.project import ProjectUpdate, ProjectCreate
 from services.resume_services.resume_service import get_resume
 
 
