@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from schemas.api.job_posting import JobPostingResponse, JobPostingUpdate, JobPostingCreate, \
-    JobPostingStatusUpdate, JobPostingCoverLetterCreate
+    JobPostingStatusUpdate, JobPostingCoverLetterCreate, ParseJobPostingCreate
 from services import job_posting_service
 
 router = APIRouter(
@@ -35,9 +35,12 @@ def create_job_posting(
     return job_posting_service.create_job_posting(db, job_posting_create)
 
 
-@router.post("/parse")
-def parse_job_posting():
-    pass
+@router.post("/parse", response_model=JobPostingResponse)
+async def parse_job_posting(
+        parse_job_posting_create: ParseJobPostingCreate,
+        db: Session = Depends(get_db),
+):
+    return await job_posting_service.parse_job_posting(db, parse_job_posting_create)
 
 
 @router.post("/{job_posting_id}/score")
@@ -45,7 +48,7 @@ def create_job_posting_score():
     pass
 
 
-@router.patch("/{job_posting_id}")
+@router.patch("/{job_posting_id}", response_model=JobPostingResponse)
 def update_job_posting(
         job_posting_id: UUID,
         job_posting_update: JobPostingUpdate,
@@ -54,7 +57,7 @@ def update_job_posting(
     return job_posting_service.update_job_posting(db, job_posting_id, job_posting_update)
 
 
-@router.delete("/{job_posting_id}")
+@router.delete("/{job_posting_id}", status_code=204)
 def delete_job_posting(
         job_posting_id: UUID,
         db: Session = Depends(get_db),
@@ -63,7 +66,7 @@ def delete_job_posting(
     return None
 
 
-@router.patch("/{job_posting_id}/status")
+@router.patch("/{job_posting_id}/status", response_model=JobPostingResponse)
 def set_job_posting_status(
         job_posting_id: UUID,
         payload: JobPostingStatusUpdate,
@@ -72,7 +75,7 @@ def set_job_posting_status(
     return job_posting_service.set_job_posting_status(db, job_posting_id, payload)
 
 
-@router.patch("/{job_posting_id}/cover-letter")
+@router.patch("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)
 async def create_job_posting_cover_letter(
         job_posting_id: UUID,
         payload: JobPostingCoverLetterCreate,

@@ -68,15 +68,19 @@ class JobPosting(BaseModel):
 class JobPostingCreate(JobPosting):
     pass
 
+
 class JobPostingUpdate(JobPosting):
     pass
+
 
 class JobPostingStatusUpdate(BaseModel):
     status: JobApplicationStatus
 
+
 class JobPostingCoverLetterCreate(BaseModel):
     resume_id: UUID
     prompt: str | None = None
+
 
 class JobPostingResponse(JobPosting):
     id: UUID
@@ -88,5 +92,11 @@ class JobPostingResponse(JobPosting):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class CoverLetter(BaseModel):
+    content: str
+
+
+class ParseJobPostingCreate(BaseModel):
+    link: str
     content: str
