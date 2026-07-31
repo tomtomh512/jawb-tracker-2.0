@@ -107,8 +107,7 @@ async def score_resume(
 ) -> ScoredRubric:
     llm = LLMManager(llm_model)
     rubric = await generate_rubric(llm, job_posting)
-    raw_rubric_items = rubric.get("items", [])
-    rubric_items = [RubricItem(**item) for item in raw_rubric_items]
+    rubric_items = rubric.items
 
     if not rubric_items:
         raise ValueError("Job posting has no rubric items")

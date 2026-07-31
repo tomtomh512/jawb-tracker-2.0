@@ -48,12 +48,12 @@ async def parse_job_posting(
 
 
 @router.patch("/{job_posting_id}/score", response_model=JobPostingResponse)
-def create_job_posting_score(
+async def create_job_posting_score(
         job_posting_id: UUID,
         job_posting_score_create: JobPostingScoreCreate,
         db: Session = Depends(get_db),
 ):
-    return job_posting_service.create_job_posting_score(
+    return await job_posting_service.create_job_posting_score(
         db,
         job_posting_id,
         job_posting_score_create.resume_id

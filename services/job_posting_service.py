@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from models import JobPosting
+from models import JobPosting, Rubric, RubricItem
 from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate, \
     JobPostingCoverLetterCreate, JobPostingResponse, ParseJobPostingCreate, JobPostingScoreCreate
 from schemas.api.resume_schemas.resume import ResumeResponse
@@ -102,7 +102,7 @@ async def parse_job_posting(
     return db_job_posting
 
 
-def create_job_posting_score(
+async def create_job_posting_score(
         db: Session,
         job_posting_id: UUID,
         resume_id: UUID,
@@ -116,14 +116,41 @@ def create_job_posting_score(
     if db_job_posting.original:
         job_posting_text = db_job_posting.original
 
-    scored_rubric = score_resume(
+    scored_rubric = await score_resume(
         resume=resume_text,
         job_posting=job_posting_text,
         llm_model="gemini"
     )
 
+    db_rubric = Rubric(
+        resume_id=resume_id,
+        job_posting_id=job_posting_id,
+        job_title=db_job_posting.title,
+        company=db_job_posting.company,
+        overall_score=scored_rubric.overall_score,
+        missing_required=scored_rubric.missing_required,
+        strengths=scored_rubric.strengths,
+        weaknesses=scored_rubric.weaknesses,
+        items=[
+            RubricItem(
+                name=item.name,
+                description=item.description,
+                importance=item.importance,
+                required=item.required,
+                weight=item.weight,
+                score=item.score,
+                weighted_score=item.weighted_score,
+                reasoning=item.reasoning,
+                evidence=item.evidence,
+                strengths=item.strengths,
+                weaknesses=item.weaknesses,
+            )
+            for item in scored_rubric.items
+        ],
+    )
+
     try:
-        db_job_posting.rubric = scored_rubric
+        db_job_posting.rubric = db_rubric
         db.commit()
     except SQLAlchemyError:
         db.rollback()
