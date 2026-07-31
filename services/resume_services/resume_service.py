@@ -35,27 +35,27 @@ def get_resume(
 
 def create_resume(
         db: Session,
-        resume: ResumeCreate
+        resume_create: ResumeCreate
 ) -> Resume:
     is_first_resume = db.query(Resume).first() is None
 
     db_resume = Resume(
-        resumeName=resume.resumeName,
+        resumeName=resume_create.resumeName,
         is_main=is_first_resume,
-        name=resume.name,
-        email=resume.email,
-        phone=resume.phone,
-        location=resume.location,
-        summary=resume.summary,
-        websites=resume.websites,
-        educations=[Education(**e.model_dump()) for e in resume.educations],
-        experiences=[Experience(**e.model_dump()) for e in resume.experiences],
-        projects=[Project(**p.model_dump()) for p in resume.projects],
-        skill_categories=[SkillCategory(**s.model_dump()) for s in resume.skill_categories],
-        certifications=[Certification(**c.model_dump()) for c in resume.certifications],
-        publications=[Publication(**p.model_dump()) for p in resume.publications],
-        awards=[Award(**a.model_dump()) for a in resume.awards],
-        custom_sections=[CustomSection(**cs.model_dump()) for cs in resume.custom_sections],
+        name=resume_create.name,
+        email=resume_create.email,
+        phone=resume_create.phone,
+        location=resume_create.location,
+        summary=resume_create.summary,
+        websites=resume_create.websites,
+        educations=[Education(**e.model_dump()) for e in resume_create.educations],
+        experiences=[Experience(**e.model_dump()) for e in resume_create.experiences],
+        projects=[Project(**p.model_dump()) for p in resume_create.projects],
+        skill_categories=[SkillCategory(**s.model_dump()) for s in resume_create.skill_categories],
+        certifications=[Certification(**c.model_dump()) for c in resume_create.certifications],
+        publications=[Publication(**p.model_dump()) for p in resume_create.publications],
+        awards=[Award(**a.model_dump()) for a in resume_create.awards],
+        custom_sections=[CustomSection(**cs.model_dump()) for cs in resume_create.custom_sections],
     )
 
     db.add(db_resume)
@@ -71,18 +71,18 @@ def create_resume(
 
 async def parse_resume_from_text(
         db: Session,
-        resume: ResumeTextCreate
+        resume_text_create: ResumeTextCreate
 ) -> Resume:
-    existing = db.query(Resume).filter(Resume.resumeName == resume.resumeName).first()
+    existing = db.query(Resume).filter(Resume.resumeName == resume_text_create.resumeName).first()
     if existing is not None:
         raise HTTPException(status_code=400, detail="Resume name already exists")
 
     is_first_resume = db.query(Resume).first() is None
 
-    parsed_resume = await parse_resume_from_text(resume.content)
+    parsed_resume = await parse_resume_from_text(resume_text_create.content)
 
     db_resume = Resume(
-        resumeName=resume.resumeName,
+        resumeName=resume_text_create.resumeName,
         is_main=is_first_resume,
         name=parsed_resume.basics.name,
         email=parsed_resume.basics.email,
