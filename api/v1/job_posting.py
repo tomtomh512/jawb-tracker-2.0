@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from database import get_db
-from schemas.api.job_posting import JobPostingResponse, JobPostingUpdate, JobPostingCreate, \
-    JobPostingStatusUpdate, JobPostingCoverLetterCreate, ParseJobPostingCreate, JobPostingScoreCreate
+from schemas.api.job_posting import (JobPostingResponse, JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate,
+                                     ParseJobPostingCreate, JobPostingCoverLetterUpdate, JobPostingScoreUpdate)
 from services import job_posting_service
 
 router = APIRouter(
@@ -47,19 +47,6 @@ async def parse_job_posting(
     )
 
 
-@router.patch("/{job_posting_id}/score", response_model=JobPostingResponse)
-async def create_job_posting_score(
-        job_posting_id: UUID,
-        job_posting_score_create: JobPostingScoreCreate,
-        db: Session = Depends(get_db),
-):
-    return await job_posting_service.create_job_posting_score(
-        db,
-        job_posting_id,
-        job_posting_score_create.resume_id
-    )
-
-
 @router.patch("/{job_posting_id}", response_model=JobPostingResponse)
 def update_job_posting(
         job_posting_id: UUID,
@@ -69,6 +56,42 @@ def update_job_posting(
     return job_posting_service.update_job_posting(db, job_posting_id, job_posting_update)
 
 
+@router.patch("/{job_posting_id}/status", response_model=JobPostingResponse)
+def update_job_posting_status(
+        job_posting_id: UUID,
+        job_posting_status_update: JobPostingStatusUpdate,
+        db: Session = Depends(get_db),
+):
+    return job_posting_service.update_job_posting_status(db, job_posting_id, job_posting_status_update.status)
+
+
+@router.patch("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)
+async def update_job_posting_cover_letter(
+        job_posting_id: UUID,
+        job_posting_cover_letter_update: JobPostingCoverLetterUpdate,
+        db: Session = Depends(get_db),
+):
+    return await job_posting_service.update_job_posting_cover_letter(
+        db,
+        job_posting_id,
+        job_posting_cover_letter_update.resume_id,
+        job_posting_cover_letter_update.prompt,
+    )
+
+
+@router.patch("/{job_posting_id}/score", response_model=JobPostingResponse)
+async def update_job_posting_score(
+        job_posting_id: UUID,
+        job_posting_score_update: JobPostingScoreUpdate,
+        db: Session = Depends(get_db),
+):
+    return await job_posting_service.update_job_posting_score(
+        db,
+        job_posting_id,
+        job_posting_score_update.resume_id
+    )
+
+
 @router.delete("/{job_posting_id}", status_code=204)
 def delete_job_posting(
         job_posting_id: UUID,
@@ -76,26 +99,3 @@ def delete_job_posting(
 ):
     job_posting_service.delete_job_posting(db, job_posting_id)
     return None
-
-
-@router.patch("/{job_posting_id}/status", response_model=JobPostingResponse)
-def set_job_posting_status(
-        job_posting_id: UUID,
-        job_posting_status_update: JobPostingStatusUpdate,
-        db: Session = Depends(get_db),
-):
-    return job_posting_service.set_job_posting_status(db, job_posting_id, job_posting_status_update.status)
-
-
-@router.patch("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)
-async def create_job_posting_cover_letter(
-        job_posting_id: UUID,
-        payload: JobPostingCoverLetterCreate,
-        db: Session = Depends(get_db),
-):
-    return await job_posting_service.create_job_posting_cover_letter(
-        db,
-        job_posting_id,
-        payload.resume_id,
-        payload.prompt,
-    )

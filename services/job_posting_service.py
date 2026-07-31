@@ -5,12 +5,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models import JobPosting, Rubric, RubricItem
-from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate, \
-    JobPostingCoverLetterCreate, JobPostingResponse, ParseJobPostingCreate, JobPostingScoreCreate
-from schemas.api.resume_schemas.resume import ResumeResponse
-from schemas.llm.job_posting import ParsedJobPosting
-from schemas.llm.resume import ParsedResume
-from services.resume_services.resume_service import get_resume
+from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingResponse
+from schemas.api.resume import ResumeResponse
+from services.resume_service import get_resume
 from utils.cover_letter_generator import generate_cover_letter
 from utils.job_posting_parser import parse_job_posting_from_text
 from utils.score import score_resume
@@ -102,7 +99,81 @@ async def parse_job_posting(
     return db_job_posting
 
 
-async def create_job_posting_score(
+def update_job_posting(
+        db: Session,
+        job_posting_id: UUID,
+        job_posting_update: JobPostingUpdate,
+) -> JobPosting:
+    db_job_posting = get_job_posting(db, job_posting_id)
+    if db_job_posting is None:
+        return None
+
+    update_data = job_posting_update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_job_posting, field, value)
+
+    try:
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not update job posting") from None
+
+    db.refresh(db_job_posting)
+    return db_job_posting
+
+
+def update_job_posting_status(
+        db: Session,
+        job_posting_id: UUID,
+        status: str
+) -> JobPosting:
+    db_job_posting = get_job_posting(db, job_posting_id)
+
+    try:
+        db_job_posting.status = status
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not set status") from None
+
+    db.refresh(db_job_posting)
+    return db_job_posting
+
+
+async def update_job_posting_cover_letter(
+        db: Session,
+        job_posting_id: UUID,
+        resume_id: UUID,
+        prompt: str,
+) -> JobPosting:
+    db_resume = get_resume(db, resume_id)
+    db_job_posting = get_job_posting(db, job_posting_id)
+
+    resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
+    job_posting_text = JobPostingResponse.model_validate(db_job_posting).model_dump_json(indent=2)
+
+    if db_job_posting.original:
+        job_posting_text = db_job_posting.original
+
+    cover_letter = await generate_cover_letter(
+        resume=resume_text,
+        job_posting=job_posting_text,
+        llm_model="gemini",
+        custom_prompt=prompt
+    )
+
+    try:
+        db_job_posting.cover_letter = cover_letter.content
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not set cover letter") from None
+
+    db.refresh(db_job_posting)
+    return db_job_posting
+
+
+async def update_job_posting_score(
         db: Session,
         job_posting_id: UUID,
         resume_id: UUID,
@@ -160,29 +231,6 @@ async def create_job_posting_score(
     return db_job_posting
 
 
-def update_job_posting(
-        db: Session,
-        job_posting_id: UUID,
-        job_posting_update: JobPostingUpdate,
-) -> JobPosting:
-    db_job_posting = get_job_posting(db, job_posting_id)
-    if db_job_posting is None:
-        return None
-
-    update_data = job_posting_update.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(db_job_posting, field, value)
-
-    try:
-        db.commit()
-    except SQLAlchemyError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Could not update job posting") from None
-
-    db.refresh(db_job_posting)
-    return db_job_posting
-
-
 def delete_job_posting(
         db: Session,
         job_posting_id: UUID,
@@ -196,55 +244,4 @@ def delete_job_posting(
         db.rollback()
         raise HTTPException(status_code=400, detail="Could not delete job posting") from None
 
-    return db_job_posting
-
-
-def set_job_posting_status(
-        db: Session,
-        job_posting_id: UUID,
-        status: str
-) -> JobPosting:
-    db_job_posting = get_job_posting(db, job_posting_id)
-
-    try:
-        db_job_posting.status = status
-        db.commit()
-    except SQLAlchemyError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Could not set status") from None
-
-    db.refresh(db_job_posting)
-    return db_job_posting
-
-
-async def create_job_posting_cover_letter(
-        db: Session,
-        job_posting_id: UUID,
-        resume_id: UUID,
-        prompt: str,
-) -> JobPosting:
-    db_resume = get_resume(db, resume_id)
-    db_job_posting = get_job_posting(db, job_posting_id)
-
-    resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
-    job_posting_text = JobPostingResponse.model_validate(db_job_posting).model_dump_json(indent=2)
-
-    if db_job_posting.original:
-        job_posting_text = db_job_posting.original
-
-    cover_letter = await generate_cover_letter(
-        resume=resume_text,
-        job_posting=job_posting_text,
-        llm_model="gemini",
-        custom_prompt=prompt
-    )
-
-    try:
-        db_job_posting.cover_letter = cover_letter.content
-        db.commit()
-    except SQLAlchemyError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Could not set cover letter") from None
-
-    db.refresh(db_job_posting)
     return db_job_posting

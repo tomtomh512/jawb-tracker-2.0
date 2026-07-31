@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Award
-from schemas.api.resume_schemas.award import AwardUpdate, AwardCreate
-from services.resume_services.resume_service import get_resume
+from schemas.api.award import AwardUpdate, AwardCreate
+from services.resume_service import get_resume
 
 
 def get_awards(
@@ -22,7 +22,7 @@ def get_award(
     resume_id: UUID,
     award_id: UUID,
 ) -> Award:
-    award = (
+    db_award = (
         db.query(Award)
         .filter(
             Award.id == award_id,
@@ -31,10 +31,10 @@ def get_award(
         .first()
     )
 
-    if award is None:
+    if db_award is None:
         raise HTTPException(status_code=404, detail="Award not found")
 
-    return award
+    return db_award
 
 
 def create_award(
@@ -42,12 +42,12 @@ def create_award(
         resume_id: UUID,
         award: AwardCreate,
 ) -> Award:
-    resume = get_resume(db, resume_id)
+    db_resume = get_resume(db, resume_id)
 
     db_award = Award(resume_id=resume_id, **award.model_dump())
 
     db.add(db_award)
-    resume.updated_at = func.now()
+    db_resume.updated_at = func.now()
 
     try:
         db.commit()

@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Experience
-from schemas.api.resume_schemas.experience import ExperienceUpdate, ExperienceCreate
-from services.resume_services.resume_service import get_resume
+from schemas.api.experience import ExperienceUpdate, ExperienceCreate
+from services.resume_service import get_resume
 
 
 def get_experiences(
@@ -22,7 +22,7 @@ def get_experience(
     resume_id: UUID,
     experience_id: UUID,
 ) -> Experience:
-    experience = (
+    db_experience = (
         db.query(Experience)
         .filter(
             Experience.id == experience_id,
@@ -31,10 +31,10 @@ def get_experience(
         .first()
     )
 
-    if experience is None:
+    if db_experience is None:
         raise HTTPException(status_code=404, detail="Experience not found")
 
-    return experience
+    return db_experience
 
 
 def create_experience(
@@ -42,12 +42,12 @@ def create_experience(
         resume_id: UUID,
         experience: ExperienceCreate,
 ) -> Experience:
-    resume = get_resume(db, resume_id)
+    db_resume = get_resume(db, resume_id)
 
     db_experience = Experience(resume_id=resume_id, **experience.model_dump())
 
     db.add(db_experience)
-    resume.updated_at = func.now()
+    db_resume.updated_at = func.now()
 
     try:
         db.commit()

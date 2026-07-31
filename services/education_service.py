@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Education
-from schemas.api.resume_schemas.education import EducationUpdate, EducationCreate
-from services.resume_services.resume_service import get_resume
+from schemas.api.education import EducationUpdate, EducationCreate
+from services.resume_service import get_resume
 
 
 def get_educations(
@@ -22,7 +22,7 @@ def get_education(
     resume_id: UUID,
     education_id: UUID,
 ) -> Education:
-    education = (
+    db_education = (
         db.query(Education)
         .filter(
             Education.id == education_id,
@@ -31,10 +31,10 @@ def get_education(
         .first()
     )
 
-    if education is None:
+    if db_education is None:
         raise HTTPException(status_code=404, detail="Education not found")
 
-    return education
+    return db_education
 
 
 def create_education(
@@ -42,12 +42,12 @@ def create_education(
         resume_id: UUID,
         education: EducationCreate,
 ) -> Education:
-    resume = get_resume(db, resume_id)
+    db_resume = get_resume(db, resume_id)
 
     db_education = Education(resume_id=resume_id, **education.model_dump())
 
     db.add(db_education)
-    resume.updated_at = func.now()
+    db_resume.updated_at = func.now()
 
     try:
         db.commit()

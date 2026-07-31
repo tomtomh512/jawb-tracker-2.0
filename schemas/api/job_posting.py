@@ -69,6 +69,11 @@ class JobPostingCreate(JobPosting):
     pass
 
 
+class ParseJobPostingCreate(BaseModel):
+    link: str
+    content: str
+
+
 class JobPostingUpdate(JobPosting):
     pass
 
@@ -77,9 +82,13 @@ class JobPostingStatusUpdate(BaseModel):
     status: JobApplicationStatus
 
 
-class JobPostingCoverLetterCreate(BaseModel):
+class JobPostingCoverLetterUpdate(BaseModel):
     resume_id: UUID
     prompt: str | None = None
+
+
+class JobPostingScoreUpdate(BaseModel):
+    resume_id: UUID
 
 
 class JobPostingResponse(JobPosting):
@@ -95,12 +104,3 @@ class JobPostingResponse(JobPosting):
 
 class CoverLetter(BaseModel):
     content: str
-
-
-class ParseJobPostingCreate(BaseModel):
-    link: str
-    content: str
-
-
-class JobPostingScoreCreate(BaseModel):
-    resume_id: UUID

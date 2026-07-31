@@ -2,11 +2,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.resume_schemas.skill_category import SkillCategoryResponse, SkillCategoryUpdate, SkillCategoryCreate
+from schemas.api.skill_category import SkillCategoryResponse, SkillCategoryUpdate, SkillCategoryCreate
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services.resume_services import skill_category_service
+from services import skill_category_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/skill-categories",

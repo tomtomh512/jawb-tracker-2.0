@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Certification
-from schemas.api.resume_schemas.certification import CertificationUpdate, CertificationCreate
-from services.resume_services.resume_service import get_resume
+from schemas.api.certification import CertificationUpdate, CertificationCreate
+from services.resume_service import get_resume
 
 
 def get_certifications(
@@ -22,7 +22,7 @@ def get_certification(
     resume_id: UUID,
     certification_id: UUID,
 ) -> Certification:
-    certification = (
+    db_certification = (
         db.query(Certification)
         .filter(
             Certification.id == certification_id,
@@ -31,10 +31,10 @@ def get_certification(
         .first()
     )
 
-    if certification is None:
+    if db_certification is None:
         raise HTTPException(status_code=404, detail="Certification not found")
 
-    return certification
+    return db_certification
 
 
 def create_certification(
@@ -42,12 +42,12 @@ def create_certification(
         resume_id: UUID,
         certification: CertificationCreate,
 ) -> Certification:
-    resume = get_resume(db, resume_id)
+    db_resume = get_resume(db, resume_id)
 
     db_certification = Certification(resume_id=resume_id, **certification.model_dump())
 
     db.add(db_certification)
-    resume.updated_at = func.now()
+    db_resume.updated_at = func.now()
 
     try:
         db.commit()

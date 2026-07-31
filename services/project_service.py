@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Project
-from schemas.api.resume_schemas.project import ProjectUpdate, ProjectCreate
-from services.resume_services.resume_service import get_resume
+from schemas.api.project import ProjectUpdate, ProjectCreate
+from services.resume_service import get_resume
 
 
 def get_projects(
@@ -22,7 +22,7 @@ def get_project(
     resume_id: UUID,
     project_id: UUID,
 ) -> Project:
-    project = (
+    db_project = (
         db.query(Project)
         .filter(
             Project.id == project_id,
@@ -31,10 +31,10 @@ def get_project(
         .first()
     )
 
-    if project is None:
+    if db_project is None:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    return project
+    return db_project
 
 
 def create_project(
@@ -42,12 +42,12 @@ def create_project(
         resume_id: UUID,
         project: ProjectCreate,
 ) -> Project:
-    resume = get_resume(db, resume_id)
+    db_resume = get_resume(db, resume_id)
 
     db_project = Project(resume_id=resume_id, **project.model_dump())
 
     db.add(db_project)
-    resume.updated_at = func.now()
+    db_resume.updated_at = func.now()
 
     try:
         db.commit()

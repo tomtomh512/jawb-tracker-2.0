@@ -2,11 +2,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.resume_schemas.education import EducationResponse, EducationUpdate, EducationCreate
+from schemas.api.education import EducationResponse, EducationUpdate, EducationCreate
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services.resume_services import education_service
+from services import education_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/educations",

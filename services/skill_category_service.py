@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import SkillCategory
-from schemas.api.resume_schemas.skill_category import SkillCategoryUpdate, SkillCategoryCreate
-from services.resume_services.resume_service import get_resume
+from schemas.api.skill_category import SkillCategoryUpdate, SkillCategoryCreate
+from services.resume_service import get_resume
 
 
 def get_skill_categories(
@@ -22,7 +22,7 @@ def get_skill_category(
     resume_id: UUID,
     skill_category_id: UUID,
 ) -> SkillCategory:
-    skill_category = (
+    db_skill_category = (
         db.query(SkillCategory)
         .filter(
             SkillCategory.id == skill_category_id,
@@ -31,10 +31,10 @@ def get_skill_category(
         .first()
     )
 
-    if skill_category is None:
+    if db_skill_category is None:
         raise HTTPException(status_code=404, detail="SkillCategory not found")
 
-    return skill_category
+    return db_skill_category
 
 
 def create_skill_category(
@@ -42,12 +42,12 @@ def create_skill_category(
         resume_id: UUID,
         skill_category: SkillCategoryCreate,
 ) -> SkillCategory:
-    resume = get_resume(db, resume_id)
+    db_resume = get_resume(db, resume_id)
 
     db_skill_category = SkillCategory(resume_id=resume_id, **skill_category.model_dump())
 
     db.add(db_skill_category)
-    resume.updated_at = func.now()
+    db_resume.updated_at = func.now()
 
     try:
         db.commit()

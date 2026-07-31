@@ -15,7 +15,7 @@ from models.resume import (
     Award,
     CustomSection,
 )
-from schemas.api.resume_schemas.resume import ResumeCreate, ResumeUpdate, ResumeTextCreate
+from schemas.api.resume import ResumeCreate, ResumeUpdate
 from utils.resume_parser import parse_resume_from_text
 
 
@@ -27,10 +27,10 @@ def get_resume(
         db: Session,
         resume_id: UUID
 ) -> Resume:
-    resume = db.query(Resume).filter(Resume.id == resume_id).first()
-    if resume is None:
+    db_resume = db.query(Resume).filter(Resume.id == resume_id).first()
+    if db_resume is None:
         raise HTTPException(status_code=404, detail="Resume not found")
-    return resume
+    return db_resume
 
 
 def create_resume(
@@ -143,22 +143,6 @@ def update_resume(
     return db_resume
 
 
-def delete_resume(
-        db: Session,
-        resume_id: UUID
-) -> Resume:
-    db_resume = get_resume(db, resume_id)
-
-    try:
-        db.delete(db_resume)
-        db.commit()
-    except SQLAlchemyError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Could not delete resume") from None
-
-    return db_resume
-
-
 def set_main_resume(
         db: Session,
         resume_id: UUID
@@ -178,4 +162,20 @@ def set_main_resume(
         raise HTTPException(status_code=400, detail="Could not set main resume") from None
 
     db.refresh(db_resume)
+    return db_resume
+
+
+def delete_resume(
+        db: Session,
+        resume_id: UUID
+) -> Resume:
+    db_resume = get_resume(db, resume_id)
+
+    try:
+        db.delete(db_resume)
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not delete resume") from None
+
     return db_resume

@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import CustomSection
-from schemas.api.resume_schemas.custom_section import CustomSectionUpdate, CustomSectionCreate
-from services.resume_services.resume_service import get_resume
+from schemas.api.custom_section import CustomSectionUpdate, CustomSectionCreate
+from services.resume_service import get_resume
 
 
 def get_custom_sections(
@@ -22,7 +22,7 @@ def get_custom_section(
     resume_id: UUID,
     custom_section_id: UUID,
 ) -> CustomSection:
-    custom_section = (
+    db_custom_section = (
         db.query(CustomSection)
         .filter(
             CustomSection.id == custom_section_id,
@@ -31,10 +31,10 @@ def get_custom_section(
         .first()
     )
 
-    if custom_section is None:
+    if db_custom_section is None:
         raise HTTPException(status_code=404, detail="CustomSection not found")
 
-    return custom_section
+    return db_custom_section
 
 
 def create_custom_section(
@@ -42,12 +42,12 @@ def create_custom_section(
         resume_id: UUID,
         custom_section: CustomSectionCreate,
 ) -> CustomSection:
-    resume = get_resume(db, resume_id)
+    db_resume = get_resume(db, resume_id)
 
     db_custom_section = CustomSection(resume_id=resume_id, **custom_section.model_dump())
 
     db.add(db_custom_section)
-    resume.updated_at = func.now()
+    db_resume.updated_at = func.now()
 
     try:
         db.commit()

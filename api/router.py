@@ -1,13 +1,13 @@
 from fastapi import APIRouter
-from api.v1.resumes.resume import router as resumes_router
-from api.v1.resumes.education import router as education_router
-from api.v1.resumes.experience import router as experience_router
-from api.v1.resumes.award import router as award_router
-from api.v1.resumes.certification import router as certification_router
-from api.v1.resumes.custom_section import router as custom_section_router
-from api.v1.resumes.project import router as project_router
-from api.v1.resumes.publication import router as publication_router
-from api.v1.resumes.skill_category import router as skill_category_router
+from api.v1.resume import router as resumes_router
+from api.v1.education import router as education_router
+from api.v1.experience import router as experience_router
+from api.v1.award import router as award_router
+from api.v1.certification import router as certification_router
+from api.v1.custom_section import router as custom_section_router
+from api.v1.project import router as project_router
+from api.v1.publication import router as publication_router
+from api.v1.skill_category import router as skill_category_router
 
 from api.v1.job_posting import router as job_posting_router
 

@@ -2,11 +2,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from schemas.api.resume_schemas.project import ProjectResponse, ProjectUpdate, ProjectCreate
+from schemas.api.project import ProjectResponse, ProjectUpdate, ProjectCreate
 from database import get_db
 from sqlalchemy.orm import Session
 
-from services.resume_services import project_service
+from services import project_service
 
 router = APIRouter(
     prefix="/resumes/{resume_id}/projects",

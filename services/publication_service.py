@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.resume import Publication
-from schemas.api.resume_schemas.publication import PublicationUpdate, PublicationCreate
-from services.resume_services.resume_service import get_resume
+from schemas.api.publication import PublicationUpdate, PublicationCreate
+from services.resume_service import get_resume
 
 
 def get_publications(
@@ -22,7 +22,7 @@ def get_publication(
     resume_id: UUID,
     publication_id: UUID,
 ) -> Publication:
-    publication = (
+    db_publication = (
         db.query(Publication)
         .filter(
             Publication.id == publication_id,
@@ -31,10 +31,10 @@ def get_publication(
         .first()
     )
 
-    if publication is None:
+    if db_publication is None:
         raise HTTPException(status_code=404, detail="Publication not found")
 
-    return publication
+    return db_publication
 
 
 def create_publication(
@@ -42,12 +42,12 @@ def create_publication(
         resume_id: UUID,
         publication: PublicationCreate,
 ) -> Publication:
-    resume = get_resume(db, resume_id)
+    db_resume = get_resume(db, resume_id)
 
     db_publication = Publication(resume_id=resume_id, **publication.model_dump())
 
     db.add(db_publication)
-    resume.updated_at = func.now()
+    db_resume.updated_at = func.now()
 
     try:
         db.commit()
