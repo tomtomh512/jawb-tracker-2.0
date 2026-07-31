@@ -69,7 +69,7 @@ def create_resume(
     return db_resume
 
 
-async def create_resume_from_text(
+async def parse_resume_from_text(
         db: Session,
         resume: ResumeTextCreate
 ) -> Resume:
@@ -111,7 +111,7 @@ async def create_resume_from_text(
     return db_resume
 
 
-async def create_resume_from_pdf(
+async def parse_resume_from_pdf(
     db: Session,
     resume_name: str,
     pdf: UploadFile,

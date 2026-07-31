@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from services.resume_services import skill_category_service
 
 router = APIRouter(
-    prefix="/resumes/{resume_id}/skill_categories",
-    tags=["skill_categories"]
+    prefix="/resumes/{resume_id}/skill-categories",
+    tags=["skill categories"]
 )
 
 

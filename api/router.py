@@ -9,6 +9,8 @@ from api.v1.resumes.project import router as project_router
 from api.v1.resumes.publication import router as publication_router
 from api.v1.resumes.skill_category import router as skill_category_router
 
+from api.v1.job_posting import router as job_posting_router
+
 api_router = APIRouter()
 
 api_router.include_router(resumes_router)
@@ -20,3 +22,5 @@ api_router.include_router(project_router)
 api_router.include_router(publication_router)
 api_router.include_router(skill_category_router)
 api_router.include_router(certification_router)
+
+api_router.include_router(job_posting_router)

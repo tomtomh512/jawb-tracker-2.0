@@ -33,17 +33,17 @@ def create_resume(
     return resume_service.create_resume(db, resume)
 
 
-@router.post("/text", response_model=ResumeResponse)
-async def create_resume_from_text(
+@router.post("/parse", response_model=ResumeResponse)
+async def parse_resume_from_text(
         resume: ResumeTextCreate,
         db: Session = Depends(get_db)
 ):
-    return await resume_service.create_resume_from_text(db, resume)
+    return await resume_service.parse_resume_from_text(db, resume)
 
 
-@router.post("/pdf")
-def create_resume_from_pdf():
-    return resume_service.create_resume_from_pdf()
+# @router.post("/parsePdf")
+# def parse_resume_from_pdf():
+#     return resume_service.parse_resume_from_pdf()
 
 
 @router.patch("/{resume_id}", response_model=ResumeResponse)

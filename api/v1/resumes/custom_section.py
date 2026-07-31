@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from services.resume_services import custom_section_service
 
 router = APIRouter(
-    prefix="/resumes/{resume_id}/custom_sections",
-    tags=["custom_sections"]
+    prefix="/resumes/{resume_id}/custom-sections",
+    tags=["custom sections"]
 )
 
 
