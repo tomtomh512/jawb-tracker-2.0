@@ -22,6 +22,7 @@ class Rubric(Base):
         UUID(as_uuid=True),
         ForeignKey("JobPostings.id", ondelete="CASCADE"),
         nullable=False,
+        unique=True,
         index=True,
     )
 
@@ -44,7 +45,7 @@ class Rubric(Base):
     )
 
     resume = relationship("Resume", back_populates="rubrics")
-    job_posting = relationship("JobPosting", back_populates="rubrics")
+    job_posting = relationship("JobPosting", back_populates="rubric")
 
 
 class RubricItem(Base):

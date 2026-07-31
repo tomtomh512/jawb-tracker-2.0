@@ -4,6 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from schemas.api.rubric import RubricResponse
+
 
 class EmploymentType(str, Enum):
     FULL_TIME = "full_time"
@@ -71,6 +73,7 @@ class JobPostingUpdate(JobPosting):
 class JobPostingResponse(JobPosting):
     id: UUID
     status: JobApplicationStatus
+    rubric: RubricResponse | None = None
 
     created_at: datetime
     updated_at: datetime
