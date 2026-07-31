@@ -43,7 +43,7 @@ def create_resume(
     is_first_resume = db.query(Resume).first() is None
 
     db_resume = Resume(
-        resumeName=resume_create.resumeName,
+        resume_name=resume_create.resume_name,
         is_main=is_first_resume,
         name=resume_create.name,
         email=resume_create.email,
@@ -77,7 +77,7 @@ async def parse_resume_text(
         resume_text_content: str,
         resume_name: str,
 ) -> Resume:
-    existing = db.query(Resume).filter(Resume.resumeName == resume_name).first()
+    existing = db.query(Resume).filter(Resume.resume_name == resume_name).first()
     if existing is not None:
         raise HTTPException(status_code=400, detail="Resume name already exists")
 
@@ -86,7 +86,7 @@ async def parse_resume_text(
     parsed_resume = await parse_resume_from_text(resume_text_content)
 
     db_resume = Resume(
-        resumeName=resume_name,
+        resume_name=resume_name,
         is_main=is_first_resume,
         name=parsed_resume.basics.name,
         email=parsed_resume.basics.email,

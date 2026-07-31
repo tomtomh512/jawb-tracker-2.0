@@ -145,6 +145,7 @@ async def parse_job_posting(
                 scored_rubric = results_by_key["score"]
                 db_job_posting.rubric = Rubric(
                     resume_id=resume_id,
+                    resume_name=db_resume.resume_name,
                     job_posting_id=db_job_posting.id,
                     job_title=db_job_posting.title,
                     company=db_job_posting.company,
@@ -280,6 +281,7 @@ async def update_job_posting_score(
 
     db_rubric = Rubric(
         resume_id=resume_id,
+        resume_name=db_resume.resume_name,
         job_posting_id=job_posting_id,
         job_title=db_job_posting.title,
         company=db_job_posting.company,

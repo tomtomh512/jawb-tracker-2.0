@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from database import Base
-from sqlalchemy import Integer, Column, String, Date, DateTime, Float, ForeignKey, Boolean, func, UUID, Index
+from sqlalchemy import Column, String, Date, DateTime, Float, ForeignKey, Boolean, func, UUID, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -10,7 +10,7 @@ class Resume(Base):
     __tablename__ = "Resumes"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, index=True)
-    resumeName = Column(String, nullable=False, index=True, unique=True)
+    resume_name = Column(String, nullable=False, index=True, unique=True)
     is_main = Column(Boolean, nullable=False, default=False, server_default="false")
     name = Column(String, nullable=True)
     email = Column(String, nullable=True)
@@ -227,3 +227,4 @@ class CustomSection(Base):
         "Resume",
         back_populates="custom_sections"
     )
+

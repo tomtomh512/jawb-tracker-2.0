@@ -24,6 +24,7 @@ class RubricItemResponse(BaseModel):
 class RubricResponse(BaseModel):
     id: UUID
     resume_id: UUID
+    resume_name: str
     job_posting_id: UUID
 
     job_title: str | None = None

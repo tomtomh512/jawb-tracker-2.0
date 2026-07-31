@@ -14,7 +14,7 @@ from schemas.api.skill_category import SkillCategoryCreate, SkillCategoryRespons
 
 
 class ResumeBase(BaseModel):
-    resumeName: str
+    resume_name: str
     name: str | None = None
     email: str | None = None
     phone: str | None = None

@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from database import Base
-from sqlalchemy import Integer, Column, String, Date, DateTime, Float, ForeignKey, Boolean, func, UUID, Index
+from sqlalchemy import Integer, Column, String, DateTime, Float, ForeignKey, Boolean, func, UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -17,6 +17,8 @@ class Rubric(Base):
         nullable=False,
         index=True,
     )
+
+    resume_name = Column(String, nullable=True)
 
     job_posting_id = Column(
         UUID(as_uuid=True),
