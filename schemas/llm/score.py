@@ -53,10 +53,10 @@ class ScoredRubricItem(BaseModel):
     weaknesses: List[str] = Field(default_factory=list)
 
 
-class ResumeScoreResult(BaseModel):
+class ScoredRubric(BaseModel):
     job_title: Optional[str] = None
     company: Optional[str] = None
-    overall_score: Optional[float] = None
+    overall_score: float
     items: List[ScoredRubricItem] = Field(default_factory=list)
     missing_required: List[str] = Field(default_factory=list)
     strengths: List[str] = Field(default_factory=list)

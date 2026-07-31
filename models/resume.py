@@ -10,14 +10,14 @@ class Resume(Base):
     __tablename__ = "Resumes"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, index=True)
-    resumeName = Column(String, index=True, unique=True)
+    resumeName = Column(String, nullable=False, index=True, unique=True)
     is_main = Column(Boolean, nullable=False, default=False, server_default="false")
     name = Column(String, nullable=True)
     email = Column(String, nullable=True)
     phone = Column(String, nullable=True)
     location = Column(String, nullable=True)
     summary = Column(String, nullable=True)
-    websites = Column(ARRAY(String), nullable=True)
+    websites = Column(ARRAY(String), nullable=True, default=list)
 
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -69,6 +69,12 @@ class Resume(Base):
         cascade="all, delete-orphan",
     )
 
+    rubrics = relationship(
+        "Rubric",
+        back_populates="resume",
+        cascade="all",
+    )
+
     __table_args__ = (
         Index(
             "ix_resumes_only_one_main",
@@ -89,8 +95,8 @@ class Education(Base):
     degree = Column(String, nullable=True)
     field_of_study = Column(String, nullable=True)
     gpa = Column(Float, nullable=True)
-    honors = Column(ARRAY(String), nullable=True)
-    coursework = Column(ARRAY(String), nullable=True)
+    honors = Column(ARRAY(String), nullable=True, default=list)
+    coursework = Column(ARRAY(String), nullable=True, default=list)
     start_date = Column(Date, nullable=True)
     end_date = Column(Date, nullable=True)
 
@@ -112,7 +118,7 @@ class Experience(Base):
     start_date = Column(Date, nullable=True)
     end_date = Column(Date, nullable=True)
     current_job = Column(Boolean, nullable=True)
-    bullet_points = Column(ARRAY(String), nullable=True)
+    bullet_points = Column(ARRAY(String), nullable=True, default=list)
 
     resume = relationship(
         "Resume",
@@ -128,9 +134,9 @@ class Project(Base):
 
     name = Column(String, nullable=True)
     description = Column(String, nullable=True)
-    technologies = Column(ARRAY(String), nullable=True)
-    links = Column(ARRAY(String), nullable=True)
-    bullet_points = Column(ARRAY(String), nullable=True)
+    technologies = Column(ARRAY(String), nullable=True, default=list)
+    links = Column(ARRAY(String), nullable=True, default=list)
+    bullet_points = Column(ARRAY(String), nullable=True, default=list)
 
     resume = relationship(
         "Resume",
@@ -145,7 +151,7 @@ class SkillCategory(Base):
     resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     category = Column(String, nullable=True)
-    skills = Column(ARRAY(String), nullable=True)
+    skills = Column(ARRAY(String), nullable=True, default=list)
 
     resume = relationship(
         "Resume",
@@ -179,7 +185,7 @@ class Publication(Base):
     resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     title = Column(String, nullable=True)
-    authors = Column(ARRAY(String), nullable=True)
+    authors = Column(ARRAY(String), nullable=True, default=list)
     venue = Column(String, nullable=True)
     publisher = Column(String, nullable=True)
     publication_date = Column(Date, nullable=True)
@@ -194,7 +200,7 @@ class Publication(Base):
 class Award(Base):
     __tablename__ = "Awards"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID, primary_key=True)
     resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     name = Column(String, nullable=True)
@@ -211,11 +217,11 @@ class Award(Base):
 class CustomSection(Base):
     __tablename__ = "CustomSections"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID, primary_key=True)
     resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     title = Column(String, nullable=True)
-    entries = Column(ARRAY(String), nullable=True)
+    entries = Column(ARRAY(String), nullable=True, default=list)
 
     resume = relationship(
         "Resume",
