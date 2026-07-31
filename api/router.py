@@ -11,6 +11,8 @@ from api.v1.skill_category import router as skill_category_router
 
 from api.v1.job_posting import router as job_posting_router
 
+from api.v1.note import router as note_router
+
 api_router = APIRouter()
 
 api_router.include_router(resumes_router)
@@ -24,3 +26,5 @@ api_router.include_router(skill_category_router)
 api_router.include_router(certification_router)
 
 api_router.include_router(job_posting_router)
+
+api_router.include_router(note_router)

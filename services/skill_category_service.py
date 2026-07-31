@@ -65,8 +65,6 @@ def update_skill_category(
         skill_category_update: SkillCategoryUpdate,
 ) -> SkillCategory:
     db_skill_category = get_skill_category(db, resume_id, skill_category_id)
-    if db_skill_category is None:
-        return None
 
     update_data = skill_category_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

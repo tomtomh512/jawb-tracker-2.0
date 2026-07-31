@@ -10,5 +10,5 @@ class Note(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, index=True)
 
     content = Column(String)
-    is_linked = Column(Boolean, default=False)
+    is_link = Column(Boolean, default=False)
     copy_to_clipboard = Column(Boolean, default=False)

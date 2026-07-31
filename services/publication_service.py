@@ -65,8 +65,6 @@ def update_publication(
         publication_update: PublicationUpdate,
 ) -> Publication:
     db_publication = get_publication(db, resume_id, publication_id)
-    if db_publication is None:
-        return None
 
     update_data = publication_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

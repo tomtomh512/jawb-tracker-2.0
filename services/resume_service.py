@@ -129,8 +129,6 @@ def update_resume(
         resume_update: ResumeUpdate
 ) -> Resume:
     db_resume = get_resume(db, resume_id)
-    if db_resume is None:
-        return None
 
     update_data = resume_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

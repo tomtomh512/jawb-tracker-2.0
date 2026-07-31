@@ -65,8 +65,6 @@ def update_custom_section(
         custom_section_update: CustomSectionUpdate,
 ) -> CustomSection:
     db_custom_section = get_custom_section(db, resume_id, custom_section_id)
-    if db_custom_section is None:
-        return None
 
     update_data = custom_section_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

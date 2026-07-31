@@ -65,8 +65,6 @@ def update_project(
         project_update: ProjectUpdate,
 ) -> Project:
     db_project = get_project(db, resume_id, project_id)
-    if db_project is None:
-        return None
 
     update_data = project_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

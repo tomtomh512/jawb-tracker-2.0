@@ -65,8 +65,6 @@ def update_award(
         award_update: AwardUpdate,
 ) -> Award:
     db_award = get_award(db, resume_id, award_id)
-    if db_award is None:
-        return None
 
     update_data = award_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

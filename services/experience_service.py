@@ -65,8 +65,6 @@ def update_experience(
         experience_update: ExperienceUpdate,
 ) -> Experience:
     db_experience = get_experience(db, resume_id, experience_id)
-    if db_experience is None:
-        return None
 
     update_data = experience_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

@@ -65,8 +65,6 @@ def update_certification(
         certification_update: CertificationUpdate,
 ) -> Certification:
     db_certification = get_certification(db, resume_id, certification_id)
-    if db_certification is None:
-        return None
 
     update_data = certification_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

@@ -65,8 +65,6 @@ def update_education(
         education_update: EducationUpdate,
 ) -> Education:
     db_education = get_education(db, resume_id, education_id)
-    if db_education is None:
-        return None
 
     update_data = education_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():

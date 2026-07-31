@@ -188,8 +188,6 @@ def update_job_posting(
         job_posting_update: JobPostingUpdate,
 ) -> JobPosting:
     db_job_posting = get_job_posting(db, job_posting_id)
-    if db_job_posting is None:
-        return None
 
     update_data = job_posting_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
