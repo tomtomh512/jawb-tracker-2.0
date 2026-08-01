@@ -7,7 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, load_only
 
 from models import JobPosting, Rubric, RubricItem
-from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingResponse
+from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingResponse, JobApplicationStatus
 from schemas.api.resume import ResumeResponse
 from services.resume_service import get_resume
 from utils.cover_letter_generator import generate_cover_letter
@@ -17,15 +17,17 @@ from utils.score import score_resume
 
 def get_job_postings(
         db: Session,
+        status: JobApplicationStatus | None = None,
         skip: int = 0,
         limit: int = 50
 ) -> list[JobPosting]:
+    db_job_posting = db.query(JobPosting)
+
+    if status is not None:
+        db_job_posting = db_job_posting.filter(JobPosting.status == status)
+
     return (
-        db.query(JobPosting)
-        .options(load_only(JobPosting.id, JobPosting.title, JobPosting.company,
-                            JobPosting.location_raw, JobPosting.min_salary,
-                            JobPosting.max_salary, JobPosting.currency, JobPosting.period,
-                           JobPosting.created_at, JobPosting.status))
+        db_job_posting
         .order_by(JobPosting.created_at.desc())
         .offset(skip)
         .limit(limit)
@@ -37,12 +39,12 @@ def get_job_posting(
         db: Session,
         job_posting_id: UUID,
 ) -> JobPosting:
-    job_posting = db.query(JobPosting).filter(JobPosting.id == job_posting_id).first()
+    db_job_posting = db.query(JobPosting).filter(JobPosting.id == job_posting_id).first()
 
-    if job_posting is None:
+    if db_job_posting is None:
         raise HTTPException(status_code=404, detail="Job posting not found")
 
-    return job_posting
+    return db_job_posting
 
 
 def create_job_posting(

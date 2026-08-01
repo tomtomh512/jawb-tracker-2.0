@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from limiter import limiter
 from database import get_db
 from schemas.api.job_posting import (JobPostingResponse, JobPostingUpdate, JobPostingCreate, ParseJobPostingCreate,
-                                     JobPostingCoverLetterUpdate, JobPostingScoreUpdate, JobPostingSummaryResponse)
+                                     JobPostingCoverLetterUpdate, JobPostingScoreUpdate, JobPostingSummaryResponse,
+                                     JobApplicationStatus)
 from services import job_posting_service
 
 router = APIRouter(
@@ -17,11 +18,12 @@ router = APIRouter(
 
 @router.get("/", response_model=list[JobPostingSummaryResponse])
 def get_job_postings(
+        status: JobApplicationStatus | None = Query(None),
         skip: int = Query(0, ge=0),
         limit: int = Query(50, ge=1, le=200),
         db: Session = Depends(get_db),
 ):
-    return job_posting_service.get_job_postings(db, skip, limit)
+    return job_posting_service.get_job_postings(db, status, skip, limit)
 
 
 @router.get("/{job_posting_id}", response_model=JobPostingResponse)
