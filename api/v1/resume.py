@@ -1,6 +1,8 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
+
+from limiter import limiter
 from schemas.api.resume import ResumeCreate, ResumeResponse, ResumeUpdate, ResumeTextCreate
 from database import get_db
 from sqlalchemy.orm import Session
@@ -38,7 +40,9 @@ def create_resume(
 
 
 @router.post("/parse", response_model=ResumeResponse)
+@limiter.limit("3/minute")
 async def parse_resume_text(
+        request: Request,
         resume_text_create: ResumeTextCreate,
         db: Session = Depends(get_db)
 ):

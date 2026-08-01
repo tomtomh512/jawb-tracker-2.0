@@ -1,11 +1,12 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
+from limiter import limiter
 from database import get_db
-from schemas.api.job_posting import (JobPostingResponse, JobPostingUpdate, JobPostingCreate,
-                                     ParseJobPostingCreate, JobPostingCoverLetterUpdate, JobPostingScoreUpdate)
+from schemas.api.job_posting import (JobPostingResponse, JobPostingUpdate, JobPostingCreate, ParseJobPostingCreate,
+                                     JobPostingCoverLetterUpdate, JobPostingScoreUpdate)
 from services import job_posting_service
 
 router = APIRouter(
@@ -40,7 +41,9 @@ def create_job_posting(
 
 
 @router.post("/parse", response_model=JobPostingResponse)
+@limiter.limit("3/minute")
 async def parse_job_posting(
+        request: Request,
         parse_job_posting_create: ParseJobPostingCreate,
         db: Session = Depends(get_db),
 ):
@@ -65,7 +68,9 @@ def update_job_posting(
 
 
 @router.post("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)
+@limiter.limit("3/minute")
 async def update_job_posting_cover_letter(
+        request: Request,
         job_posting_id: UUID,
         job_posting_cover_letter_update: JobPostingCoverLetterUpdate,
         db: Session = Depends(get_db),
@@ -79,7 +84,9 @@ async def update_job_posting_cover_letter(
 
 
 @router.post("/{job_posting_id}/score", response_model=JobPostingResponse)
+@limiter.limit("3/minute")
 async def update_job_posting_score(
+        request: Request,
         job_posting_id: UUID,
         job_posting_score_update: JobPostingScoreUpdate,
         db: Session = Depends(get_db),
