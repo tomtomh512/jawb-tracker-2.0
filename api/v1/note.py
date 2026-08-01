@@ -23,6 +23,11 @@ def get_notes(
     return note_service.get_notes(db, skip, limit)
 
 
+@router.get("/clipboard", response_model=list[NoteResponse])
+def get_clipboard_notes(db: Session = Depends(get_db)):
+    return note_service.get_clipboard_notes(db)
+
+
 @router.get("/{note_id}", response_model=NoteResponse)
 def get_note(
         note_id: UUID,

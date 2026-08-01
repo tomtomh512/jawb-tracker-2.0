@@ -33,6 +33,11 @@ def get_note(
 
     return db_note
 
+
+def get_clipboard_notes(db: Session) -> list[Note]:
+    return db.query(Note).filter(Note.copy_to_clipboard).all()
+
+
 def create_note(
         db: Session,
         note_create: NoteCreate
@@ -52,6 +57,7 @@ def create_note(
 
     db.refresh(db_note)
     return db_note
+
 
 def update_note(
         db: Session,
@@ -73,6 +79,7 @@ def update_note(
 
     db.refresh(db_note)
     return db_note
+
 
 def delete_note(
         db: Session,
