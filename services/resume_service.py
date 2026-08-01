@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import HTTPException, UploadFile
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 
 from models.resume import (
     Resume,
@@ -27,6 +27,7 @@ def get_resumes(
 ) -> list[Resume]:
     return (
         db.query(Resume)
+        .options(load_only(Resume.id, Resume.resume_name, Resume.is_main, Resume.updated_at))
         .order_by(Resume.updated_at.desc())
         .offset(skip)
         .limit(limit)

@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 
 from models import JobPosting, Rubric, RubricItem
 from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingResponse
@@ -22,6 +22,9 @@ def get_job_postings(
 ) -> list[JobPosting]:
     return (
         db.query(JobPosting)
+        .options(load_only(JobPosting.id, JobPosting.title, JobPosting.company,
+                            JobPosting.location_raw, JobPosting.min_salary,
+                            JobPosting.max_salary, JobPosting.currency, JobPosting.period, JobPosting.created_at))
         .order_by(JobPosting.created_at.desc())
         .offset(skip)
         .limit(limit)

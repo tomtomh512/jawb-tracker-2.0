@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from schemas.api.rubric import RubricResponse
 
@@ -104,3 +104,36 @@ class JobPostingResponse(JobPosting):
 
 class CoverLetter(BaseModel):
     content: str
+
+
+class JobPostingSummaryResponse(BaseModel):
+    id: UUID
+    title: str | None = None
+    company: str | None = None
+    location_raw: str | None = None
+    min_salary: int | None = None
+    max_salary: int | None = None
+    currency: str | None = None
+    period: str | None = None
+    created_at: datetime
+    overall_score: float | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @model_validator(mode="before")
+    @classmethod
+    def flatten_rubric_score(cls, obj):
+        if isinstance(obj, dict):
+            return obj
+        return {
+            "id": obj.id,
+            "title": obj.title,
+            "company": obj.company,
+            "location_raw": obj.location_raw,
+            "min_salary": obj.min_salary,
+            "max_salary": obj.max_salary,
+            "currency": obj.currency,
+            "period": obj.period,
+            "created_at": obj.created_at,
+            "overall_score": obj.rubric.overall_score if obj.rubric else None,
+        }

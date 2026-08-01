@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, Request
 
 from limiter import limiter
-from schemas.api.resume import ResumeCreate, ResumeResponse, ResumeUpdate, ResumeTextCreate
+from schemas.api.resume import ResumeCreate, ResumeResponse, ResumeUpdate, ResumeTextCreate, ResumeSummaryResponse
 from database import get_db
 from sqlalchemy.orm import Session
 from services import resume_service
@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[ResumeResponse])
+@router.get("/", response_model=list[ResumeSummaryResponse])
 def get_resumes(
         skip: int = Query(0, ge=0),
         limit: int = Query(5, ge=1, le=50),

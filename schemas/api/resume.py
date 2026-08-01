@@ -58,3 +58,12 @@ class ResumeResponse(ResumeBase):
 class ResumeTextCreate(BaseModel):
     resume_name: str
     content: str
+
+
+class ResumeSummaryResponse(BaseModel):
+    id: UUID
+    resume_name: str
+    is_main: bool
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
