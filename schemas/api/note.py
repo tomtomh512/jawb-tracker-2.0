@@ -5,8 +5,8 @@ from pydantic import BaseModel, ConfigDict
 
 
 class Note(BaseModel):
+    title: str | None = None
     content: str
-    is_link: bool | None = False
     copy_to_clipboard: bool | None = False
 
 

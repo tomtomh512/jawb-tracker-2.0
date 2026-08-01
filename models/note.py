@@ -9,8 +9,8 @@ class Note(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, index=True)
 
-    content = Column(String)
-    is_link = Column(Boolean, default=False)
+    title = Column(String, nullable=True)
+    content = Column(String, nullable=False)
     copy_to_clipboard = Column(Boolean, default=False)
 
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

@@ -38,8 +38,8 @@ def create_note(
         note_create: NoteCreate
 ) -> Note:
     db_note = Note(
+        title=note_create.title,
         content=note_create.content,
-        is_link=note_create.is_link,
         copy_to_clipboard=note_create.copy_to_clipboard
     )
 
