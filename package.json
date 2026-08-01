@@ -1,0 +1,12 @@
+{
+  "name": "jawb-tracker-2.0",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"venv\\Scripts\\activate && uvicorn main:app --reload\" \"cd sample_frontend/website && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
