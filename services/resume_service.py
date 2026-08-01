@@ -28,7 +28,10 @@ def get_resumes(
     return (
         db.query(Resume)
         .options(load_only(Resume.id, Resume.resume_name, Resume.is_main, Resume.updated_at))
-        .order_by(Resume.updated_at.desc())
+        .order_by(
+            Resume.is_main.desc(),
+            Resume.updated_at.desc()
+        )
         .offset(skip)
         .limit(limit)
         .all()
