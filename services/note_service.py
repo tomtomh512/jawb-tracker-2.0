@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -54,6 +55,7 @@ def update_note(
         setattr(db_note, field, value)
 
     try:
+        db_note.updated_at = func.now()
         db.commit()
     except SQLAlchemyError:
         db.rollback()
