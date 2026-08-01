@@ -35,6 +35,20 @@ def get_resumes(
     )
 
 
+def get_main_resume(db: Session) -> Resume:
+    db_resume = (
+        db.query(Resume)
+        .options(load_only(Resume.id, Resume.resume_name, Resume.is_main, Resume.updated_at))
+        .filter(Resume.is_main)
+        .first()
+    )
+
+    if db_resume is None:
+        raise HTTPException(status_code=404, detail="Resume not found")
+
+    return db_resume
+
+
 def get_resume(
         db: Session,
         resume_id: UUID

@@ -23,6 +23,11 @@ def get_resumes(
     return resume_service.get_resumes(db, skip, limit)
 
 
+@router.get("/main", response_model=ResumeSummaryResponse)
+def get_main_resume(db: Session = Depends(get_db)):
+    return resume_service.get_main_resume(db)
+
+
 @router.get("/{resume_id}", response_model=ResumeResponse)
 def get_resume(
         resume_id: UUID,

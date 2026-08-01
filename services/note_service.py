@@ -35,7 +35,12 @@ def get_note(
 
 
 def get_clipboard_notes(db: Session) -> list[Note]:
-    return db.query(Note).filter(Note.copy_to_clipboard).all()
+    db_note = db.query(Note).filter(Note.copy_to_clipboard).all()
+
+    if db_note is None:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    return db_note
 
 
 def create_note(
