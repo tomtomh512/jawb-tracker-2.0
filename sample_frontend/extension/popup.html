@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Jawb Tracker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Top bar -->
+      <header class="topbar">
+        <div class="topbar__brand">
+          <span class="topbar__mark">JT</span>
+          <span class="topbar__name">Jawb Tracker</span>
+        </div>
+        <div class="topbar__actions">
+          <button id="settingsBtn" class="icon-btn" title="Settings">⚙</button>
+        </div>
+      </header>
+
+      <!-- Settings panel (hidden by default) -->
+      <section id="settingsPanel" class="settings-panel hidden">
+        <div class="field">
+          <label>Backend API URL</label>
+          <input id="apiBaseUrl" type="text" placeholder="http://localhost:8000/api/v1" />
+        </div>
+        <div class="btn-row">
+          <button id="saveSettingsBtn" class="btn btn--accent btn--sm">Save</button>
+          <button id="closeSettingsBtn" class="btn btn--ghost btn--sm">Close</button>
+        </div>
+        <p id="connStatus" class="hint"></p>
+      </section>
+
+      <main class="main">
+        <!-- Clipboard notes strip -->
+        <section id="clipboardSection" class="clipboard-strip hidden">
+          <div class="clipboard-strip__title">Clipboard notes</div>
+          <div id="clipList" class="clip-list"></div>
+        </section>
+
+        <!-- Parse card -->
+        <section class="card">
+          <div class="card__header">
+            <div>
+              <span class="card__eyebrow">Parser</span>
+              <h2>Parse job posting</h2>
+            </div>
+          </div>
+          <form id="parseForm" class="card__body">
+            <div class="field">
+              <div class="field__label-row">
+                <label>Job posting text</label>
+                <button type="button" id="pasteBtn" class="icon-btn">⎘ Paste</button>
+              </div>
+              <textarea
+                id="content"
+                class="content-textarea"
+                rows="8"
+                placeholder="Copy a job posting, then click Paste…"
+              ></textarea>
+            </div>
+
+            <div class="field">
+              <label>Link</label>
+              <input id="link" type="url" placeholder="https://…" />
+            </div>
+
+            <div class="field">
+              <div class="checkbox-line">
+                <input type="checkbox" id="includeScore" />
+                <label for="includeScore" id="scoreLabel">Score against main resume</label>
+              </div>
+            </div>
+
+            <button id="parseBtn" class="btn btn--accent btn--block" type="submit">
+              Parse job posting
+            </button>
+            <p class="hint" style="margin-top: 8px">
+              Parsing calls an LLM and is limited to 3 requests per minute.
+            </p>
+          </form>
+        </section>
+
+        <!-- Recent postings table -->
+        <section class="card">
+          <div class="card__header">
+            <div>
+              <span class="card__eyebrow">Tracker</span>
+              <h2>Recent postings</h2>
+            </div>
+            <button id="refreshBtn" class="icon-btn" title="Refresh">⟳</button>
+          </div>
+          <div class="table-wrap">
+            <div id="tableLoading" class="loading-line">Loading job postings…</div>
+            <div id="tableEmpty" class="empty-state hidden">
+              <h3>Nothing here yet</h3>
+              <p>Paste a posting above to get started.</p>
+            </div>
+            <table id="jpTable" class="jp-table hidden">
+              <thead>
+                <tr>
+                  <th>Role</th>
+                  <th>Company</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="jpTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <div id="toast" class="toast hidden"></div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

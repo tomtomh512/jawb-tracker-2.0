@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Jawb Tracker — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="topbar__brand-mark">JT</span>
+        <span class="topbar__brand-name">Jawb Tracker settings</span>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="field">
+        <label>Backend API base URL</label>
+        <input type="url" id="apiBaseUrl" placeholder="http://localhost:8000/api/v1" />
+        <span class="hint">Where the extension sends parse / lookup requests.</span>
+      </div>
+
+      <div class="field">
+        <label>Full tracker web app URL</label>
+        <input type="url" id="webAppUrl" placeholder="http://localhost:5173" />
+        <span class="hint">Used for the "Open full tracker" link and when opening a posting's detail page.</span>
+      </div>
+
+      <button class="btn btn--accent" id="saveBtn">Save</button>
+      <span class="hint" id="savedHint" style="margin-left:10px;"></span>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

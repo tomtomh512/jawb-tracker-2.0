@@ -68,7 +68,7 @@ export default function ParsePanel({ onCreated }) {
     <div className="card">
       <div className="card__header">
         <div>
-          <span className="card__eyebrow">Step one</span>
+          <span className="card__eyebrow">Parser</span>
           <h2>Submit a job posting</h2>
         </div>
       </div>

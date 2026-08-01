@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Jawb Tracker",
+  "version": "1.0.0",
+  "description": "Parse job postings and check your clipboard notes without leaving the page.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Jawb Tracker",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "options_page": "options.html",
+  "permissions": ["storage", "activeTab"]
+}
