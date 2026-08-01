@@ -214,25 +214,6 @@ def update_job_posting(
     return db_job_posting
 
 
-def update_job_posting_status(
-        db: Session,
-        job_posting_id: UUID,
-        status: str
-) -> JobPosting:
-    db_job_posting = get_job_posting(db, job_posting_id)
-
-    try:
-        db_job_posting.updated_at = func.now()
-        db_job_posting.status = status
-        db.commit()
-    except SQLAlchemyError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Could not set status") from None
-
-    db.refresh(db_job_posting)
-    return db_job_posting
-
-
 async def update_job_posting_cover_letter(
         db: Session,
         job_posting_id: UUID,

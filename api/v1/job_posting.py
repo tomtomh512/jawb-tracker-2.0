@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from database import get_db
-from schemas.api.job_posting import (JobPostingResponse, JobPostingUpdate, JobPostingCreate, JobPostingStatusUpdate,
+from schemas.api.job_posting import (JobPostingResponse, JobPostingUpdate, JobPostingCreate,
                                      ParseJobPostingCreate, JobPostingCoverLetterUpdate, JobPostingScoreUpdate)
 from services import job_posting_service
 
@@ -62,15 +62,6 @@ def update_job_posting(
         db: Session = Depends(get_db),
 ):
     return job_posting_service.update_job_posting(db, job_posting_id, job_posting_update)
-
-
-@router.patch("/{job_posting_id}/status", response_model=JobPostingResponse)
-def update_job_posting_status(
-        job_posting_id: UUID,
-        job_posting_status_update: JobPostingStatusUpdate,
-        db: Session = Depends(get_db),
-):
-    return job_posting_service.update_job_posting_status(db, job_posting_id, job_posting_status_update.status)
 
 
 @router.post("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)

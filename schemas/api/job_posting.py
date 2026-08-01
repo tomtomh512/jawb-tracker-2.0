@@ -79,10 +79,6 @@ class ParseJobPostingCreate(BaseModel):
 
 
 class JobPostingUpdate(JobPosting):
-    pass
-
-
-class JobPostingStatusUpdate(BaseModel):
     status: JobApplicationStatus
 
 
