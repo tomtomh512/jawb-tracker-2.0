@@ -15,7 +15,12 @@ def get_note(
         db: Session,
         note_id: UUID
 ) -> Note:
-    return db.query(Note).filter(Note.id == note_id).first()
+    db_note = db.query(Note).filter(Note.id == note_id).first()
+
+    if db_note is None:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    return db_note
 
 def create_note(
         db: Session,

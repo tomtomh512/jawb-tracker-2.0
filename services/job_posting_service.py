@@ -326,7 +326,7 @@ def delete_job_posting(
     try:
         db.delete(db_job_posting)
         db.commit()
-    except Exception:
+    except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Could not delete job posting") from None
 

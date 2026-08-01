@@ -69,7 +69,7 @@ def update_job_posting_status(
     return job_posting_service.update_job_posting_status(db, job_posting_id, job_posting_status_update.status)
 
 
-@router.patch("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)
+@router.post("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)
 async def update_job_posting_cover_letter(
         job_posting_id: UUID,
         job_posting_cover_letter_update: JobPostingCoverLetterUpdate,
@@ -83,7 +83,7 @@ async def update_job_posting_cover_letter(
     )
 
 
-@router.patch("/{job_posting_id}/score", response_model=JobPostingResponse)
+@router.post("/{job_posting_id}/score", response_model=JobPostingResponse)
 async def update_job_posting_score(
         job_posting_id: UUID,
         job_posting_score_update: JobPostingScoreUpdate,
