@@ -20,8 +20,18 @@ from schemas.api.resume import ResumeCreate, ResumeUpdate
 from utils.resume_parser import parse_resume_from_text
 
 
-def get_resumes(db: Session) -> list[Resume]:
-    return db.query(Resume).all()
+def get_resumes(
+        db: Session,
+        skip: int = 0,
+        limit: int = 5
+) -> list[Resume]:
+    return (
+        db.query(Resume)
+        .order_by(Resume.updated_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def get_resume(

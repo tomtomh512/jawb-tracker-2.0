@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -15,8 +15,12 @@ router = APIRouter(
 
 
 @router.get("/", response_model=list[JobPostingResponse])
-def get_job_postings(db: Session = Depends(get_db)):
-    return job_posting_service.get_job_postings(db)
+def get_job_postings(
+        skip: int = Query(0, ge=0),
+        limit: int = Query(50, ge=1, le=200),
+        db: Session = Depends(get_db),
+):
+    return job_posting_service.get_job_postings(db, skip, limit)
 
 
 @router.get("/{job_posting_id}", response_model=JobPostingResponse)

@@ -9,8 +9,18 @@ from models import Note
 from schemas.api.note import NoteCreate, NoteUpdate
 
 
-def get_notes(db: Session) -> list[Note]:
-    return db.query(Note).all()
+def get_notes(
+        db: Session,
+        skip: int = 0,
+        limit: int = 10
+) -> list[Note]:
+    return (
+        db.query(Note)
+        .order_by(Note.updated_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 def get_note(
         db: Session,

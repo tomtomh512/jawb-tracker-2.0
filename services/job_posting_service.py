@@ -15,8 +15,18 @@ from utils.job_posting_parser import parse_job_posting_from_text
 from utils.score import score_resume
 
 
-def get_job_postings(db: Session) -> list[JobPosting]:
-    return db.query(JobPosting).all()
+def get_job_postings(
+        db: Session,
+        skip: int = 0,
+        limit: int = 50
+) -> list[JobPosting]:
+    return (
+        db.query(JobPosting)
+        .order_by(JobPosting.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def get_job_posting(

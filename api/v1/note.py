@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from database import get_db
 from sqlalchemy.orm import Session
@@ -15,8 +15,13 @@ router = APIRouter(
 
 
 @router.get("/", response_model=list[NoteResponse])
-def get_notes(db: Session = Depends(get_db)):
-    return note_service.get_notes(db)
+def get_notes(
+        skip: int = Query(0, ge=0),
+        limit: int = Query(10, ge=1, le=100),
+        db: Session = Depends(get_db),
+):
+    return note_service.get_notes(db, skip, limit)
+
 
 @router.get("/{note_id}", response_model=NoteResponse)
 def get_note(
