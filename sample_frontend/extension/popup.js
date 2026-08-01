@@ -176,6 +176,7 @@ async function loadMainResume() {
     state.mainResume = resume;
     label.textContent = `Score against main resume (${resume.resume_name})`;
     checkbox.disabled = false;
+    checkbox.checked = true;
   } catch {
     state.mainResume = null;
     label.textContent = "Score against main resume (none set)";
@@ -276,7 +277,7 @@ async function handleParseSubmit(e) {
     showToast("Job posting parsed");
     contentEl.value = "";
     linkEl.value = "";
-    includeScoreEl.checked = false;
+    includeScoreEl.checked = true;
     await loadJobPostings();
   } catch (err) {
     showToast(err instanceof ApiError ? err.message : "Failed to parse job posting", "error");

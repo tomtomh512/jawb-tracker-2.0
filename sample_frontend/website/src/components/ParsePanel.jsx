@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../api/useApi";
 import { useSettings } from "../context/SettingsContext";
@@ -15,11 +15,24 @@ export default function ParsePanel({ onCreated }) {
   const [link, setLink] = useState("");
   const [content, setContent] = useState("");
   const [includeCoverLetter, setIncludeCoverLetter] = useState(false);
-  const [includeScore, setIncludeScore] = useState(false);
+  const [includeScore, setIncludeScore] = useState(true);
   const [resumeId, setResumeId] = useState("");
   const [prompt, setPrompt] = useState(settings.defaultCoverLetterPrompt);
   const [promptTouched, setPromptTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    async function init() {
+      const resumes = await api.listResumes({ limit: 50 });
+      const main = resumes.find((r) => r.is_main) || resumes[0];
+      if (main) {
+        setResumeId(main.id);
+      } else {
+        setIncludeScore(false);
+      }
+    }
+    init();
+  }, [api]);
 
   const needsResume = includeCoverLetter || includeScore;
 
@@ -52,10 +65,9 @@ export default function ParsePanel({ onCreated }) {
       setContent("");
       setLink("");
       setIncludeCoverLetter(false);
-      setIncludeScore(false);
+      setIncludeScore(true);
       setPromptTouched(false);
       onCreated?.(posting);
-      navigate(`/job-postings/${posting.id}`);
     } catch (err) {
       const msg = err instanceof ApiError ? err.message : "Failed to parse job posting";
       showToast(msg, "error");
