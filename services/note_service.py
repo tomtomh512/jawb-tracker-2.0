@@ -22,6 +22,7 @@ def get_notes(
         .all()
     )
 
+
 def get_note(
         db: Session,
         note_id: UUID

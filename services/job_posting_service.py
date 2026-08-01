@@ -24,7 +24,8 @@ def get_job_postings(
         db.query(JobPosting)
         .options(load_only(JobPosting.id, JobPosting.title, JobPosting.company,
                             JobPosting.location_raw, JobPosting.min_salary,
-                            JobPosting.max_salary, JobPosting.currency, JobPosting.period, JobPosting.created_at))
+                            JobPosting.max_salary, JobPosting.currency, JobPosting.period,
+                           JobPosting.created_at, JobPosting.status))
         .order_by(JobPosting.created_at.desc())
         .offset(skip)
         .limit(limit)

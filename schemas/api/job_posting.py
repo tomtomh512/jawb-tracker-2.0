@@ -116,6 +116,7 @@ class JobPostingSummaryResponse(BaseModel):
     currency: str | None = None
     period: str | None = None
     created_at: datetime
+    status: JobApplicationStatus
     overall_score: float | None = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -135,5 +136,6 @@ class JobPostingSummaryResponse(BaseModel):
             "currency": obj.currency,
             "period": obj.period,
             "created_at": obj.created_at,
+            "status": obj.status,
             "overall_score": obj.rubric.overall_score if obj.rubric else None,
         }
