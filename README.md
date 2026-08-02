@@ -11,13 +11,12 @@
 - [Database & Migrations](#database--migrations)
 - [Project Structure](#project-structure)
 
-## Architecture
+## Tech Stack
 
-| Component | Tech                                                                                        | Location |
-|---|---------------------------------------------------------------------------------------------|---|
-| API server | FastAPI + SQLAlchemy                                                                        | repo root (`main.py`, `api/`, `services/`, `models/`) |
-| Database | PostgreSQL                                                                                  | via `DATABASE_URL` env vars, migrated with Alembic |
-| LLM layer | Default: Google Gemini (structured JSON output) | `llm/` |
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- React (Frontend sample)
 
 ## Prerequisites
 
@@ -70,14 +69,21 @@ DB_HOST=localhost
 DB_PORT=5432
 ```
 
-### 4. (Optional) Install frontend dependencies
+### 4. (Optional) Install frontend website dependencies
 
 ```bash
 cd sample_frontend/website
 npm install
 ```
 
-### 5. (Optional) Load the Chrome extension
+### 5. (Optional) Install desktop app dependencies
+
+```bash
+cd sample_frontend/desktop-app
+npm install
+```
+
+### 6. (Optional) Load the Chrome extension
 
 1. Go to `chrome://extensions`, enable Developer Mode.
 2. Click "Load unpacked" and select the `sample_frontend/extension` folder.
@@ -95,6 +101,13 @@ uvicorn main:app --reload
 ```bash
 cd sample_frontend/website
 npm run dev
+```
+
+**(Optional) Frontend:**
+
+```bash
+cd sample_frontend/desktop-app
+npm run electron:dev
 ```
 
 ## Resume LLM Flows
