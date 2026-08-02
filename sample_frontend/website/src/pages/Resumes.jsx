@@ -11,6 +11,7 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
   const [mode, setMode] = useState("manual");
   const [name, setName] = useState("");
   const [pasteText, setPasteText] = useState("");
+  const [pdfFile, setPdfFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(e) {
@@ -21,9 +22,13 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
       if (mode === "manual") {
         const created = await api.createResume({ resume_name: name });
         onCreatedManual(created);
-      } else {
+      } else if (mode === "paste") {
         if (!pasteText.trim()) return showToast("Paste resume text to parse", "error");
         const created = await api.parseResume({ resume_name: name, content: pasteText });
+        onParsed(created);
+      } else if (mode === "pdf") {
+        if (!pdfFile) return showToast("Choose a PDF to upload", "error");
+        const created = await api.parseResumePdf(name, pdfFile);
         onParsed(created);
       }
     } catch (err) {
@@ -48,12 +53,27 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
         <div className="checkbox-line">
           <input type="radio" name="mode" checked={mode === "paste"} onChange={() => setMode("paste")} /> Paste resume text and let AI parse it
         </div>
+        <div className="checkbox-line">
+          <input type="radio" name="mode" checked={mode === "pdf"} onChange={() => setMode("pdf")} /> Upload a PDF and let AI parse it
+        </div>
       </div>
 
       {mode === "paste" && (
         <div className="field">
           <label>Resume text</label>
           <textarea className="content-textarea" rows={10} value={pasteText} onChange={(e) => setPasteText(e.target.value)} placeholder="Paste your resume content here…" />
+        </div>
+      )}
+
+      {mode === "pdf" && (
+        <div className="field">
+          <label>Resume PDF</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => setPdfFile(e.target.files[0] ?? null)}
+          />
+          {pdfFile && <span className="hint">{pdfFile.name}</span>}
         </div>
       )}
 

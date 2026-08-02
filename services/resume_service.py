@@ -1,3 +1,5 @@
+import tempfile
+from pathlib import Path
 from uuid import UUID
 
 from fastapi import HTTPException, UploadFile
@@ -17,7 +19,7 @@ from models.resume import (
     CustomSection,
 )
 from schemas.api.resume import ResumeCreate, ResumeUpdate
-from utils.resume_parser import parse_resume_from_text
+from utils.resume_parser import parse_resume_from_text, parse_resume_from_pdf
 
 
 def get_resumes(
@@ -143,12 +145,59 @@ async def parse_resume_text(
     return db_resume
 
 
-async def parse_resume_from_pdf(
+async def parse_resume_pdf(
     db: Session,
     resume_name: str,
     pdf: UploadFile,
 ) -> Resume:
-    return None
+    if pdf.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="File must be a PDF")
+
+    existing = db.query(Resume).filter(Resume.resume_name == resume_name).first()
+    if existing is not None:
+        raise HTTPException(status_code=400, detail="Resume name already exists")
+
+    is_first_resume = db.query(Resume).first() is None
+
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+        tmp.write(await pdf.read())
+        tmp_path = Path(tmp.name)
+
+    try:
+        parsed_resume = await parse_resume_from_pdf(str(tmp_path))
+    except Exception:
+        raise HTTPException(status_code=422, detail="Could not parse PDF") from None
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+    db_resume = Resume(
+        resume_name=resume_name,
+        is_main=is_first_resume,
+        name=parsed_resume.basics.name,
+        email=parsed_resume.basics.email,
+        phone=parsed_resume.basics.phone,
+        location=parsed_resume.basics.location,
+        summary=parsed_resume.basics.summary,
+        websites=parsed_resume.basics.websites,
+        educations=[Education(**e.model_dump()) for e in parsed_resume.educations],
+        experiences=[Experience(**e.model_dump()) for e in parsed_resume.experiences],
+        projects=[Project(**p.model_dump()) for p in parsed_resume.projects],
+        skill_categories=[SkillCategory(**s.model_dump()) for s in parsed_resume.skill_categories],
+        certifications=[Certification(**c.model_dump()) for c in parsed_resume.certifications],
+        publications=[Publication(**p.model_dump()) for p in parsed_resume.publications],
+        awards=[Award(**a.model_dump()) for a in parsed_resume.awards],
+        custom_sections=[CustomSection(**cs.model_dump()) for cs in parsed_resume.custom_sections],
+    )
+
+    try:
+        db.add(db_resume)
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not create resume") from None
+
+    db.refresh(db_resume)
+    return db_resume
 
 
 def update_resume(

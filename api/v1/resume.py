@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request, Form, File, UploadFile
 
 from limiter import limiter
 from schemas.api.resume import ResumeCreate, ResumeResponse, ResumeUpdate, ResumeTextCreate, ResumeSummaryResponse
@@ -58,9 +58,19 @@ async def parse_resume_text(
     )
 
 
-# @router.post("/parsePdf")
-# def parse_resume_from_pdf():
-#     return resume_service.parse_resume_from_pdf()
+@router.post("/parsePdf", response_model=ResumeResponse)
+@limiter.limit("3/minute")
+async def parse_resume_from_pdf(
+        request: Request,
+        resume_name: str = Form(...),
+        pdf: UploadFile = File(...),
+        db: Session = Depends(get_db)
+):
+    return await resume_service.parse_resume_pdf(
+        db,
+        resume_name,
+        pdf
+    )
 
 
 @router.patch("/{resume_id}", response_model=ResumeResponse)
