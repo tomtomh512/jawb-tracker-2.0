@@ -417,8 +417,8 @@ table.jp-table {
 
 .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag {
-  color: var(--accent);
-  border: 1px solid var(--accent-dark);
+  color: #fff;
+  border: 1px solid var(--accent);
   border-radius: 999px;
   padding: 3px 10px;
   font-size: 12px;
