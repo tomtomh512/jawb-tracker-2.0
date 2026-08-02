@@ -88,6 +88,7 @@ export default function JobPostingsTable({ refreshKey, onCreated }) {
               <tr>
                 <th>Role</th>
                 <th>Company</th>
+                <th>Location</th>
                 <th>Status</th>
                 <th>Salary</th>
                 <th>Score</th>
@@ -99,6 +100,7 @@ export default function JobPostingsTable({ refreshKey, onCreated }) {
                 <tr key={jp.id} onClick={() => navigate(`/job-postings/${jp.id}`)}>
                   <td className="cell-title">{jp.title || "Untitled role"}</td>
                   <td>{jp.company || "—"}</td>
+                  <td>{jp.location_raw || [jp.city, jp.state, jp.country].filter(Boolean).join(", ") || "—"}</td>
                   <td>
                     <StatusStamp status={jp.status} />
                   </td>
