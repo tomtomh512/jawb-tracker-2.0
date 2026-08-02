@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"venv\\Scripts\\activate && uvicorn main:app --reload\" \"cd sample_frontend/website && npm run dev\""
+    "start": "concurrently -n \"BACKEND,FRONTEND,DESKTOP\" -c \"blue,green,magenta\" \"venv\\Scripts\\activate && uvicorn main:app --reload\" \"cd sample_frontend/website && npm run dev\" \"cd sample_frontend/desktop-app && npm run electron:dev\""
   },
   "devDependencies": {
     "concurrently": "^9.0.1"

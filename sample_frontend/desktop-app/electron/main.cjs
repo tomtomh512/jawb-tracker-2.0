@@ -2,7 +2,7 @@ const { app, BrowserWindow, shell, Menu } = require("electron");
 const path = require("path");
 
 const isDev = !app.isPackaged;
-const DEV_SERVER_URL = "http://localhost:5173";
+const DEV_SERVER_URL = "http://localhost:5174";
 
 let mainWindow;
 
@@ -35,7 +35,6 @@ function createWindow() {
 
   if (isDev) {
     mainWindow.loadURL(DEV_SERVER_URL);
-    mainWindow.webContents.openDevTools({ mode: "detach" });
   } else {
     mainWindow.loadFile(path.join(__dirname, "..", "dist", "index.html"));
   }
