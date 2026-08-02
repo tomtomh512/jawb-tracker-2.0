@@ -244,7 +244,6 @@ export default function JobPostingDetail() {
                 {generatingScore ? "Scoring…" : posting.rubric ? "Regenerate score" : "Generate score"}
               </button>
             </div>
-            <p className="hint" style={{ marginTop: 10 }}>Limited to 3 requests per minute per action.</p>
           </div>
         </div>
       </div>

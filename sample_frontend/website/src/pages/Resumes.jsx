@@ -54,7 +54,6 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
         <div className="field">
           <label>Resume text</label>
           <textarea className="content-textarea" rows={10} value={pasteText} onChange={(e) => setPasteText(e.target.value)} placeholder="Paste your resume content here…" />
-          <span className="hint">This calls the LLM and is limited to 3 requests per minute.</span>
         </div>
       )}
 

@@ -155,9 +155,6 @@ export default function ParsePanel({ onCreated }) {
           {submitting && <span className="spinner" />}
           {submitting ? "Parsing…" : "Parse job posting"}
         </button>
-        <p className="hint" style={{ marginTop: 8 }}>
-          Parsing (and cover letter / score generation) call an LLM and are limited to 3 requests per minute.
-        </p>
       </form>
     </div>
   );
