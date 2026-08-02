@@ -21,6 +21,31 @@ from models.resume import (
 from schemas.api.resume import ResumeCreate, ResumeUpdate
 from utils.resume_parser import parse_resume_from_text, parse_resume_from_pdf
 
+MAX_PDF_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
+CHUNK_SIZE = 1024 * 1024  # 1 MB
+
+
+async def _read_upload_with_limit(pdf: UploadFile, max_bytes: int) -> bytes:
+    chunks = []
+    total = 0
+
+    while True:
+        chunk = await pdf.read(CHUNK_SIZE)
+        if not chunk:
+            break
+
+        total += len(chunk)
+
+        if total > max_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=f"PDF exceeds the {max_bytes // (1024 * 1024)}MB limit",
+            )
+
+        chunks.append(chunk)
+
+    return b"".join(chunks)
+
 
 def get_resumes(
         db: Session,
@@ -159,8 +184,10 @@ async def parse_resume_pdf(
 
     is_first_resume = db.query(Resume).first() is None
 
+    content = await _read_upload_with_limit(pdf, MAX_PDF_SIZE_BYTES)
+
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-        tmp.write(await pdf.read())
+        tmp.write(content)
         tmp_path = Path(tmp.name)
 
     try:

@@ -5,6 +5,8 @@ import { useToast } from "../context/ToastContext";
 import Modal from "../components/Modal";
 import { formatDate } from "../constants";
 
+const MAX_PDF_SIZE_BYTES = 10 * 1024 * 1024;
+
 function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
   const api = useApi();
   const { showToast } = useToast();
@@ -28,6 +30,9 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
         onParsed(created);
       } else if (mode === "pdf") {
         if (!pdfFile) return showToast("Choose a PDF to upload", "error");
+        if (pdfFile.size > MAX_PDF_SIZE_BYTES) {
+          return showToast("PDF must be under 10MB", "error");
+        }
         const created = await api.parseResumePdf(name, pdfFile);
         onParsed(created);
       }
