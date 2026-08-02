@@ -232,8 +232,8 @@ textarea.mono, .content-textarea { font-family: var(--font-mono); font-size: 13p
 .btn:hover { background: var(--line); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn--accent { background: var(--accent); border-color: var(--accent-dark); color: #0e130f; }
-.btn--accent:hover { background: var(--accent-dark); color: #fff; }
+.btn--accent { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+.btn--accent:hover { background: var(--accent); color: #fff; }
 
 .btn--ghost { background: transparent; border-color: var(--line-strong); }
 .btn--ghost:hover { background: var(--surface-2); border-color: var(--accent); }

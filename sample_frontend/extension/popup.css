@@ -203,8 +203,8 @@ textarea { resize: vertical; min-height: 70px; font-family: var(--font-body); }
 .btn:hover { background: var(--line); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn--accent { background: var(--accent); border-color: var(--accent-dark); color: #0e130f; }
-.btn--accent:hover { background: var(--accent-dark); color: #fff; }
+.btn--accent { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+.btn--accent:hover { background: var(--accent); color: #fff; }
 
 .btn--ghost { background: transparent; border-color: var(--line-strong); }
 .btn--ghost:hover { background: var(--surface-2); border-color: var(--accent); }

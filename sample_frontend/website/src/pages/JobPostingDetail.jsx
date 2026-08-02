@@ -97,12 +97,10 @@ export default function JobPostingDetail() {
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
         <div>
-          <span className="card__eyebrow">{posting.company || "Unknown company"}</span>
-          <h1 className="mt-0">{posting.title || "Untitled role"}</h1>
+          <h1 className="mt-0">{posting.title || "Untitled role"} at {posting.company || "Unknown company"}</h1>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <StatusStamp status={posting.status} />
             <span className="hint">Added {formatDate(posting.created_at)}</span>
-            <span className="hint">{formatSalary(posting)}</span>
           </div>
         </div>
         <div className="btn-row">
@@ -139,16 +137,17 @@ export default function JobPostingDetail() {
                     <DetailField label="Employment type" value={posting.employment_type} />
                     <DetailField label="Location" value={posting.location_raw || [posting.city, posting.state, posting.country].filter(Boolean).join(", ")} />
                     <DetailField label="Remote" value={posting.remote == null ? null : posting.remote ? `Yes${posting.remote_days_per_week ? ` (${posting.remote_days_per_week}d/wk)` : ""}` : "No"} />
-                  </div>
-                  <div className="field-row" style={{ marginBottom: 14 }}>
                     <DetailField label="Education min." value={posting.education_minimum} />
                     <DetailField label="Education pref." value={posting.education_preferred} />
+                  </div>
+                  <div className="field-row" style={{ marginBottom: 14 }}>
+                    <DetailField label="Salary" value={formatSalary(posting)} />
+                    <DetailField label="Bonus" value={boolLabel(posting.bonus)} />
+                    <DetailField label="Equity" value={boolLabel(posting.equity)} />
                     <DetailField label="Clearance required" value={boolLabel(posting.clearance_required)} />
                     <DetailField label="Visa sponsorship" value={boolLabel(posting.visa_sponsorship)} />
                   </div>
                   <div className="field-row" style={{ marginBottom: 14 }}>
-                    <DetailField label="Bonus" value={boolLabel(posting.bonus)} />
-                    <DetailField label="Equity" value={boolLabel(posting.equity)} />
                     <DetailField label="Link" value={posting.link ? <a href={posting.link} target="_blank" rel="noreferrer">{posting.link}</a> : null} />
                   </div>
 
