@@ -4,7 +4,6 @@ export default function TopBar() {
   return (
     <header className="topbar">
       <NavLink to="/" className="topbar__brand">
-        <span className="topbar__brand-mark">JT</span>
         <span className="topbar__brand-name">Jawb Tracker</span>
       </NavLink>
       <nav className="topbar__nav">
