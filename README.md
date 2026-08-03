@@ -16,7 +16,8 @@
 - FastAPI
 - SQLAlchemy
 - PostgreSQL
-- React (Frontend sample)
+- React (Frontend website sample)
+- Electron (Electron desktop app sample)
 
 ## Prerequisites
 
@@ -96,14 +97,14 @@ npm install
 uvicorn main:app --reload
 ```
 
-**(Optional) Frontend:**
+**(Optional) Frontend website:**
 
 ```bash
 cd sample_frontend/website
 npm run dev
 ```
 
-**(Optional) Frontend:**
+**(Optional) Desktop app:**
 
 ```bash
 cd sample_frontend/desktop-app
@@ -173,8 +174,9 @@ schemas/llm/     Pydantic schemas used as structured LLM output targets
 llm/             Provider-agnostic LLM manager + per-provider clients
 utils/           Resume/job posting parsing, scoring, cover letter generation, backups
 alembic/         Database migrations
-sample_frontend/website    Reference React + Vite client
-sample_frontend/extension  Reference Chrome extension client
+sample_frontend/desktop-app     Reference Electron client
+sample_frontend/website         Reference React + Vite client
+sample_frontend/extension       Reference Chrome extension client
 ```
 
 ## Todos
