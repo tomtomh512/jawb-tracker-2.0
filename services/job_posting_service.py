@@ -303,8 +303,13 @@ async def update_job_posting_score(
     )
 
     try:
+        if db_job_posting.rubric is not None:
+            db.delete(db_job_posting.rubric)
+            db.flush()
+
         db_job_posting.updated_at = func.now()
         db_job_posting.rubric = db_rubric
+
         db.commit()
     except SQLAlchemyError:
         db.rollback()
