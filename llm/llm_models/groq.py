@@ -34,6 +34,7 @@ class Groq:
             self,
             prompt: str,
             output_model: type[BaseModel],
+            temperature: float = 0.0,
             system_prompt: str | None = None,
             log_message: str | None = None,
     ) -> BaseModel:
@@ -68,7 +69,7 @@ class Groq:
         response = await self.client.chat.completions.create(
             model=self.model,
             messages=messages,
-            temperature=0,
+            temperature=temperature,
             # response_format={
             #     "type": "json_object"
             # },

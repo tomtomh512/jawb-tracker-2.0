@@ -181,3 +181,4 @@ sample_frontend/extension  Reference Chrome extension client
 
 - Docker integration
 - Testing
+- Groq provider config with JSON output

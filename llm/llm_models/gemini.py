@@ -34,6 +34,7 @@ class Gemini:
             self,
             prompt: str,
             output_model: type[BaseModel],
+            temperature: float = 0.0,
             system_prompt: str | None = None,
             log_message: str | None = None
     ) -> BaseModel:
@@ -41,7 +42,7 @@ class Gemini:
             model=self.model,
             contents=prompt,
             config=types.GenerateContentConfig(
-                temperature=0,
+                temperature=temperature,
                 response_mime_type="application/json",
                 response_schema=output_model,
                 system_instruction=system_prompt,

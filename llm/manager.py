@@ -23,12 +23,14 @@ class LLMManager:
             self,
             prompt: str,
             output_model: type[BaseModel],
+            temperature: float = 0.0,
             system_prompt: str | None = None,
             log_message: str | None = None,
     ) -> BaseModel:
         return await self.model.prompt(
             prompt,
             output_model,
+            temperature,
             system_prompt,
             log_message
         )
@@ -37,6 +39,7 @@ class LLMManager:
             self,
             prompt: str,
             output_model: type[BaseModel],
+            temperature: float = 0.0,
             system_prompt: str | None = None,
             log_message: str | None = None,
     ) -> BaseModel:
@@ -44,6 +47,7 @@ class LLMManager:
             self.async_prompt(
                 prompt,
                 output_model,
+                temperature,
                 system_prompt,
                 log_message
             )

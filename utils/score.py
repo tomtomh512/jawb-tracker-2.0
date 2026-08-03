@@ -33,6 +33,7 @@ async def generate_rubric(
     result = await llm.async_prompt(
         prompt=prompt,
         output_model=Rubric,
+        temperature=0.2,
         log_message="Generating rubric"
     )
 
@@ -73,6 +74,7 @@ async def score_rubric_item(
         result = await llm.async_prompt(
             prompt=prompt,
             output_model=ScoredRubricItemLLMOutput,
+            temperature=0.2,
             log_message=f"Scoring rubric item: {rubric_item.name}"
         )
 

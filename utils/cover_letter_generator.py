@@ -47,6 +47,7 @@ async def generate_cover_letter(
     result = await llm.async_prompt(
         prompt=prompt,
         output_model=CoverLetter,
+        temperature=0.5,
         log_message="Generating cover letter."
     )
 
