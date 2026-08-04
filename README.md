@@ -2,9 +2,10 @@
 
 ## Contents
 
-- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
-- [Local Setup](#local-setup)
+- [Local Setup with Docker](#local-setup-with-docker)
+- [Local Setup without Docker](#local-setup-without-docker)
 - [Running the App](#running-the-app)
 - [Resume LLM Flows](#resume-llm-flows)
 - [Job Posting LLM Flows](#job-posting-llm-flows)
@@ -27,7 +28,7 @@
 - API keys for LLM provider:
   - Google Gemini
 
-## Local Setup (Docker)
+## Local Setup with Docker
 
 ### 1. Configure environment variables
 
@@ -162,14 +163,6 @@ Resume parsing (`utils/resume_parser.py`) turns free-text or a PDF resume into a
    PDFs are handled by uploading the file directly to Gemini (`prompt_pdf`) rather than extracting text first, so formatting-heavy resumes are read as-is.
 
 2. **Per-section structured extraction** (`parse_section` → `assemble_parsed_resume`) — each classified section is expanded concurrently (max 2 in-flight requests via an `asyncio.Semaphore`) into its full schema, e.g. an `experience` section becomes a list of `Experience` objects with title, organization, dates, and bullet points. The mapping from classification → output schema lives in `utils/section_mapping.py`. Results are merged back into one `ParsedResume`.
-
-Entry points:
-- `parse_resume_from_text(resume_text, llm_model="gemini")`
-- `parse_resume_from_pdf(pdf_path, llm_model="gemini")`
-
-Exposed via the API (`api/v1/resume.py`):
-- `POST /api/v1/resumes/parse` — parse pasted resume text
-- `POST /api/v1/resumes/parsePdf` — parse an uploaded PDF (multipart form, 10 MB max)
 
 ## Job Posting LLM Flows
 
