@@ -27,7 +27,43 @@
 - API keys for LLM provider:
   - Google Gemini
 
-## Local Setup
+## Local Setup (Docker)
+
+### 1. Configure environment variables
+
+Copy `.env.example` to `.env` in the project root and fill in values:
+
+```
+cp .env.example .env
+```
+
+```dotenv
+# Gemini (primary/default LLM provider)
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+GEMINI_MODEL=gemini-3.1-flash-lite
+
+# or some other alternate LLM provider
+
+# Postgres connection
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=jawb_tracker
+DB_HOST=localhost
+DB_PORT=5432
+```
+
+### 2. Build and start
+
+```
+docker compose up --build
+```
+
+- Backend: http://localhost:8000
+- Website: http://localhost:5173
+- Postgres: internal only, data persisted in the `pgdata` volume
+
+## Local Setup without Docker
 
 ### 1. Clone and install backend dependencies
 
@@ -52,7 +88,11 @@ CREATE DATABASE jawb_tracker
 
 ### 3. Configure environment variables
 
-Create a `.env` file in the repo root:
+Copy `.env.example` to `.env` in the project root and fill in values:
+
+```
+cp .env.example .env
+```
 
 ```dotenv
 # Gemini (primary/default LLM provider)
@@ -181,6 +221,5 @@ sample_frontend/extension       Reference Chrome extension client
 
 ## Todos
 
-- Docker integration
 - Testing
 - Groq provider config with JSON output
