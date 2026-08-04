@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class ProjectBase(BaseModel):
     name: str | None = None
     description: str | None = None
-    technologies: list[str] | None = Field(default_factory=list)
+    skills: list[str] | None = Field(default_factory=list)
     links: list[str] | None = Field(default_factory=list)
     bullet_points: list[str] | None = Field(default_factory=list)
 

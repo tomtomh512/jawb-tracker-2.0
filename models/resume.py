@@ -134,7 +134,7 @@ class Project(Base):
 
     name = Column(String, nullable=True)
     description = Column(String, nullable=True)
-    technologies = Column(ARRAY(String), nullable=True, default=list)
+    skills = Column(ARRAY(String), nullable=True, default=list)
     links = Column(ARRAY(String), nullable=True, default=list)
     bullet_points = Column(ARRAY(String), nullable=True, default=list)
 

@@ -228,7 +228,7 @@ export default function ResumeDetail() {
         fields={[
           { name: "name", label: "Name", type: "text" },
           { name: "description", label: "Description", type: "textarea" },
-          { name: "technologies", label: "Technologies", type: "list" },
+          { name: "skills", label: "Skills", type: "list" },
           { name: "links", label: "Links", type: "list" },
           { name: "bullet_points", label: "Bullet points", type: "lines" },
         ]}
@@ -236,7 +236,7 @@ export default function ResumeDetail() {
           <>
             <strong>{p.name}</strong>
             {p.description && <div className="hint">{p.description}</div>}
-            {p.technologies?.length > 0 && <div className="tag-list" style={{ marginTop: 6 }}>{p.technologies.map((t, i) => <span className="tag" key={i}>{t}</span>)}</div>}
+            {p.skills?.length > 0 && <div className="tag-list" style={{ marginTop: 6 }}>{p.skills.map((t, i) => <span className="tag" key={i}>{t}</span>)}</div>}
           </>
         )}
       />

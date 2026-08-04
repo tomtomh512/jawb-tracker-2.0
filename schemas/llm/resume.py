@@ -55,7 +55,14 @@ class Experience(BaseModel):
 class Project(BaseModel):
     name: Optional[str] = Field(None, description="Project name")
     description: Optional[str] = Field(None, description="Short description or summary of the project")
-    technologies: List[str] = Field(default_factory=list, description="Programming languages, frameworks, tools, or technologies used")
+    skills: List[str] = Field(
+        default_factory=list,
+        description=(
+            "Keywords representing technical skills, tools, technologies, "
+            "frameworks, platforms, methodologies, and relevant soft skills "
+            "associated with the project."
+        )
+    )
     links: List[str] = Field(default_factory=list, description="Project URLs such as GitHub repositories, demos, or websites")
     bullet_points: List[str] = Field(default_factory=list, description="Additional project details, accomplishments, or features")
 
