@@ -200,7 +200,7 @@ class Publication(Base):
 class Award(Base):
     __tablename__ = "Awards"
 
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     name = Column(String, nullable=True)
@@ -217,7 +217,7 @@ class Award(Base):
 class CustomSection(Base):
     __tablename__ = "CustomSections"
 
-    id = Column(UUID, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     resume_id = Column(UUID(as_uuid=True), ForeignKey("Resumes.id"), nullable=False)
 
     title = Column(String, nullable=True)
