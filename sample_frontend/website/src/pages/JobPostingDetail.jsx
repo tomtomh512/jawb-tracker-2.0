@@ -182,6 +182,15 @@ export default function JobPostingDetail() {
                 <div className="card" style={{ marginBottom: 16 }}>
                   <div className="card__header">
                     <h3>Original posting text</h3>
+                    <button
+                      className="btn btn--ghost btn--sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(posting.original);
+                        showToast("Original copied to clipboard");
+                      }}
+                    >
+                      Copy
+                    </button>
                   </div>
                   <div className="card__body">
                     <div className="bullet-block" style={{ maxHeight: 260, overflowY: "auto", color: "var(--text-muted)" }}>

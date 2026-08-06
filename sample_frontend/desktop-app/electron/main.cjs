@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, Menu } = require("electron");
+const { app, BrowserWindow, shell, Menu, MenuItem } = require("electron");
 const path = require("path");
 
 const isDev = !app.isPackaged;
@@ -22,6 +22,28 @@ function createWindow() {
       sandbox: true,
     },
     show: false,
+  });
+
+  mainWindow.webContents.on("context-menu", (e, params) => {
+    const menu = new Menu();
+
+    // Add 'Back' option if navigation history allows
+    if (mainWindow.webContents.canGoBack()) {
+      menu.append(
+        new MenuItem({
+          label: "Back",
+          click: () => {
+            mainWindow.webContents.goBack();
+          },
+        })
+      );
+    }
+
+    // Add common actions
+    menu.append(new MenuItem({ role: "copy" }));
+    menu.append(new MenuItem({ role: "paste" }));
+
+    menu.popup();
   });
 
   // Open any target="_blank" / window.open links in the user's default browser
