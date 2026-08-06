@@ -19,18 +19,18 @@ from models.resume import (
     CustomSection,
 )
 from schemas.api.resume import ResumeCreate, ResumeUpdate
-from utils.resume_parser import parse_resume_from_text, parse_resume_from_pdf
+from utils.resume_parser import parse_resume_from_text, parse_resume_from_upload
 
-MAX_PDF_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
+MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 CHUNK_SIZE = 1024 * 1024  # 1 MB
 
 
-async def _read_upload_with_limit(pdf: UploadFile, max_bytes: int) -> bytes:
+async def _read_upload_with_limit(upload: UploadFile, max_bytes: int) -> bytes:
     chunks = []
     total = 0
 
     while True:
-        chunk = await pdf.read(CHUNK_SIZE)
+        chunk = await upload.read(CHUNK_SIZE)
         if not chunk:
             break
 
@@ -39,7 +39,7 @@ async def _read_upload_with_limit(pdf: UploadFile, max_bytes: int) -> bytes:
         if total > max_bytes:
             raise HTTPException(
                 status_code=413,
-                detail=f"PDF exceeds the {max_bytes // (1024 * 1024)}MB limit",
+                detail=f"File exceeds the {max_bytes // (1024 * 1024)}MB limit",
             )
 
         chunks.append(chunk)
@@ -170,13 +170,13 @@ async def parse_resume_text(
     return db_resume
 
 
-async def parse_resume_pdf(
+async def parse_resume_upload(
     db: Session,
     resume_name: str,
-    pdf: UploadFile,
+    upload: UploadFile,
 ) -> Resume:
-    if pdf.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="File must be a PDF")
+    if upload.content_type not in ["application/pdf", "image/jpeg", "image/png"]:
+        raise HTTPException(status_code=400, detail="File must be a PDF, JPG, or PNG")
 
     existing = db.query(Resume).filter(Resume.resume_name == resume_name).first()
     if existing is not None:
@@ -184,16 +184,22 @@ async def parse_resume_pdf(
 
     is_first_resume = db.query(Resume).first() is None
 
-    content = await _read_upload_with_limit(pdf, MAX_PDF_SIZE_BYTES)
+    content = await _read_upload_with_limit(upload, MAX_FILE_SIZE_BYTES)
 
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+    extension = ".pdf"
+    if upload.content_type == "image/jpeg":
+        extension = ".jpg"
+    elif upload.content_type == "image/png":
+        extension = ".png"
+
+    with tempfile.NamedTemporaryFile(suffix=extension, delete=False) as tmp:
         tmp.write(content)
         tmp_path = Path(tmp.name)
 
     try:
-        parsed_resume = await parse_resume_from_pdf(str(tmp_path))
+        parsed_resume = await parse_resume_from_upload(str(tmp_path))
     except Exception:
-        raise HTTPException(status_code=422, detail="Could not parse PDF") from None
+        raise HTTPException(status_code=422, detail=f"Could not parse {upload.content_type}") from None
     finally:
         tmp_path.unlink(missing_ok=True)
 

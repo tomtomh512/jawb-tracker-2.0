@@ -1,5 +1,7 @@
 import asyncio
 
+from pydantic import ValidationError
+
 from llm.manager import LLMManager
 from schemas.llm.resume import InitialResumeScanOutput, ParsedResume
 from utils.section_mapping import SECTION_MAPPING
@@ -36,12 +38,19 @@ async def parse_section(llm: LLMManager, section):
             Do not invent information.
         """
 
-        result = await llm.async_prompt(
-            prompt=prompt,
-            output_model=config["model"],
-            system_prompt=INITIAL_SYSTEM_PROMPT,
-            log_message=f"Extracting resume section: {section.name}"
-        )
+        try:
+            result = await llm.async_prompt(
+                prompt=prompt,
+                output_model=config["model"],
+                system_prompt=INITIAL_SYSTEM_PROMPT,
+                log_message=f"Extracting resume section: {section.name}"
+            )
+        except ValidationError as e:
+            print(f"Skipping section '{section.name}': validation failed: {e}")
+            return None
+        except Exception as e:
+            print(f"Skipping section '{section.name}': {e}")
+            return None
 
         return config["field"], result
 
@@ -59,7 +68,7 @@ async def assemble_parsed_resume(
 
     combined = ParsedResume(basics=initial_result.basics)
     for result in extracted_sections:
-        if result is None:
+        if result is None or isinstance(result, BaseException):
             continue
 
         field, section_data = result
@@ -87,18 +96,18 @@ async def initialResumeScanText(
     )
 
 
-async def initialResumeScanPdf(
+async def initialResumeScanUpload(
         llm: LLMManager,
-        pdf_path: str,
+        upload_path: str,
 ) -> InitialResumeScanOutput:
     prompt = "Extract the basic information and section contents from this resume"
 
-    return await llm.async_prompt_pdf(
-        pdf_path=pdf_path,
+    return await llm.async_prompt_upload(
+        upload_path=upload_path,
         prompt=prompt,
         output_model=InitialResumeScanOutput,
         system_prompt=INITIAL_SYSTEM_PROMPT,
-        log_message=f"Extracting basic information from resume PDF"
+        log_message=f"Extracting basic information from resume file"
     )
 
 
@@ -114,13 +123,13 @@ async def parse_resume_from_text(
     return final_result
 
 
-async def parse_resume_from_pdf(
-        pdf_path: str,
+async def parse_resume_from_upload(
+        upload_path: str,
         llm_model: str = "gemini",
 ) -> ParsedResume:
     llm = LLMManager(llm_model)
 
-    initial_result = await initialResumeScanPdf(llm, pdf_path)
+    initial_result = await initialResumeScanUpload(llm, upload_path)
     final_result = await assemble_parsed_resume(llm, initial_result)
 
     return final_result

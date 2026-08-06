@@ -5,7 +5,8 @@ import { useToast } from "../context/ToastContext";
 import Modal from "../components/Modal";
 import { formatDate } from "../constants";
 
-const MAX_PDF_SIZE_BYTES = 10 * 1024 * 1024;
+const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
+const ACCEPTED_UPLOAD_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 
 function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
   const api = useApi();
@@ -13,7 +14,7 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
   const [mode, setMode] = useState("manual");
   const [name, setName] = useState("");
   const [pasteText, setPasteText] = useState("");
-  const [pdfFile, setPdfFile] = useState(null);
+  const [uploadFile, setUploadFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(e) {
@@ -28,12 +29,15 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
         if (!pasteText.trim()) return showToast("Paste resume text to parse", "error");
         const created = await api.parseResume({ resume_name: name, content: pasteText });
         onParsed(created);
-      } else if (mode === "pdf") {
-        if (!pdfFile) return showToast("Choose a PDF to upload", "error");
-        if (pdfFile.size > MAX_PDF_SIZE_BYTES) {
-          return showToast("PDF must be under 10MB", "error");
+      } else if (mode === "upload") {
+        if (!uploadFile) return showToast("Choose a file to upload", "error");
+        if (!ACCEPTED_UPLOAD_TYPES.includes(uploadFile.type)) {
+          return showToast("File must be a PDF, JPG, or PNG", "error");
         }
-        const created = await api.parseResumePdf(name, pdfFile);
+        if (uploadFile.size > MAX_UPLOAD_SIZE_BYTES) {
+          return showToast("File must be under 10MB", "error");
+        }
+        const created = await api.parseResumeUpload(name, uploadFile);
         onParsed(created);
       }
     } catch (err) {
@@ -59,7 +63,7 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
           <input type="radio" name="mode" checked={mode === "paste"} onChange={() => setMode("paste")} /> Paste resume text and let AI parse it
         </div>
         <div className="checkbox-line">
-          <input type="radio" name="mode" checked={mode === "pdf"} onChange={() => setMode("pdf")} /> Upload a PDF and let AI parse it
+          <input type="radio" name="mode" checked={mode === "upload"} onChange={() => setMode("upload")} /> Upload a PDF or image and let AI parse it
         </div>
       </div>
 
@@ -70,15 +74,15 @@ function CreateResumeForm({ onCreatedManual, onParsed, onCancel }) {
         </div>
       )}
 
-      {mode === "pdf" && (
+      {mode === "upload" && (
         <div className="field">
-          <label>Resume PDF</label>
+          <label>Resume file</label>
           <input
             type="file"
-            accept="application/pdf"
-            onChange={(e) => setPdfFile(e.target.files[0] ?? null)}
+            accept="application/pdf,image/jpeg,image/png"
+            onChange={(e) => setUploadFile(e.target.files[0] ?? null)}
           />
-          {pdfFile && <span className="hint">{pdfFile.name}</span>}
+          {uploadFile && <span className="hint">{uploadFile.name}</span>}
         </div>
       )}
 

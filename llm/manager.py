@@ -53,38 +53,38 @@ class LLMManager:
             )
         )
 
-    async def async_prompt_pdf(
+    async def async_prompt_upload(
             self,
-            pdf_path: str | Path,
+            upload_path: str | Path,
             prompt: str,
             output_model: type[BaseModel],
             system_prompt: str | None = None,
             log_message: str | None = None,
     ) -> BaseModel:
-        if not hasattr(self.model, "prompt_pdf"):
+        if not hasattr(self.model, "prompt_upload"):
             raise NotImplementedError(
-                f"{type(self.model).__name__} does not support PDF input."
+                f"{type(self.model).__name__} does not support upload input."
             )
 
-        return await self.model.prompt_pdf(
-            pdf_path,
+        return await self.model.prompt_upload(
+            upload_path,
             prompt,
             output_model,
             system_prompt,
             log_message
         )
 
-    def prompt_pdf(
+    def prompt_upload(
             self,
-            pdf_path: str | Path,
+            upload_path: str | Path,
             prompt: str,
             output_model: type[BaseModel],
             system_prompt: str | None = None,
             log_message: str | None = None,
     ) -> BaseModel:
         return asyncio.run(
-            self.async_prompt_pdf(
-                pdf_path,
+            self.async_prompt_upload(
+                upload_path,
                 prompt,
                 output_model,
                 system_prompt,

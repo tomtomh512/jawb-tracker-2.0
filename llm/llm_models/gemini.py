@@ -53,17 +53,17 @@ class Gemini:
 
         return output_model.model_validate_json(response.text)
 
-    async def prompt_pdf(
+    async def prompt_upload(
             self,
-            pdf_path: str | Path,
+            upload_path: str | Path,
             prompt: str,
             output_model: type[BaseModel],
             system_prompt: str | None = None,
             log_message: str | None = None,
     ) -> BaseModel:
-        pdf_path = Path(pdf_path)
+        upload_path = Path(upload_path)
 
-        uploaded = await self.client.aio.files.upload(file=pdf_path)
+        uploaded = await self.client.aio.files.upload(file=upload_path)
 
         response = await self.client.aio.models.generate_content(
             model=self.model,

@@ -58,18 +58,18 @@ async def parse_resume_text(
     )
 
 
-@router.post("/parsePdf", response_model=ResumeResponse)
+@router.post("/upload", response_model=ResumeResponse)
 @limiter.limit("3/minute")
-async def parse_resume_from_pdf(
+async def parse_resume_from_upload(
         request: Request,
         resume_name: str = Form(...),
-        pdf: UploadFile = File(...),
+        upload: UploadFile = File(...),
         db: Session = Depends(get_db)
 ):
-    return await resume_service.parse_resume_pdf(
+    return await resume_service.parse_resume_upload(
         db,
         resume_name,
-        pdf
+        upload
     )
 
 

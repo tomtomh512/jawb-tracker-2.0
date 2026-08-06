@@ -121,11 +121,11 @@ export function makeApi(baseUrl) {
     getResume: (id) => get(`/resumes/${id}`),
     createResume: (data) => post(`/resumes/`, data),
     parseResume: (data) => post(`/resumes/parse`, data),
-    parseResumePdf: (resumeName, file) => {
+    parseResumeUpload: (resumeName, file) => {
       const formData = new FormData();
       formData.append("resume_name", resumeName);
-      formData.append("pdf", file);
-      return postForm(`/resumes/parsePdf`, formData);
+      formData.append("upload", file);
+      return postForm(`/resumes/upload`, formData);
     },
     updateResume: (id, data) => patch(`/resumes/${id}`, data),
     setMainResume: (id) => patch(`/resumes/${id}/main`),

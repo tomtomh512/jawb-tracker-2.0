@@ -154,13 +154,11 @@ npm run electron:dev
 
 ## Resume LLM Flows
 
-Resume parsing (`utils/resume_parser.py`) turns free-text or a PDF resume into a fully structured `ParsedResume` object using a **two-pass extraction** strategy, all routed through `LLMManager`:
+Resume parsing (`utils/resume_parser.py`) turns free-text or a resume upload into a fully structured `ParsedResume` object using a **two-pass extraction** strategy, all routed through `LLMManager`:
 
-1. **Initial scan** (`initialResumeScanText` / `initialResumeScanPdf`) — a single LLM call extracts:
+1. **Initial scan** (`initialResumeScanText` / `initialResumeScanUpload`) — a single LLM call extracts:
    - `basics`: name, email, phone, location, summary, personal/portfolio links
    - `resume_sections`: every detected section, each classified into one of `education`, `experience`, `project`, `skill_category`, `certification`, `publication`, `award`, or `custom_section`, with the raw text preserved per entry.
-
-   PDFs are handled by uploading the file directly to Gemini (`prompt_pdf`) rather than extracting text first, so formatting-heavy resumes are read as-is.
 
 2. **Per-section structured extraction** (`parse_section` → `assemble_parsed_resume`) — each classified section is expanded concurrently (max 2 in-flight requests via an `asyncio.Semaphore`) into its full schema, e.g. an `experience` section becomes a list of `Experience` objects with title, organization, dates, and bullet points. The mapping from classification → output schema lives in `utils/section_mapping.py`. Results are merged back into one `ParsedResume`.
 
