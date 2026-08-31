@@ -27,7 +27,6 @@ const BLANK = {
   equity: null,
   visa_sponsorship: null,
   clearance_required: null,
-  notes: "",
 };
 
 export default function JobPostingForm({ initial, onSubmit, onCancel, submitLabel = "Save", includeStatus = true }) {
@@ -63,7 +62,7 @@ export default function JobPostingForm({ initial, onSubmit, onCancel, submitLabe
       ["min_salary", "max_salary", "remote_days_per_week"].forEach((k) => {
         payload[k] = payload[k] === "" || payload[k] === null ? null : Number(payload[k]);
       });
-      ["employment_type", "education_minimum", "education_preferred", "link", "location_raw", "city", "state", "country", "currency", "period", "notes", "title", "company"].forEach(
+      ["employment_type", "education_minimum", "education_preferred", "link", "location_raw", "city", "state", "country", "currency", "period", "title", "company"].forEach(
         (k) => {
           if (payload[k] === "") payload[k] = null;
         }
@@ -204,11 +203,6 @@ export default function JobPostingForm({ initial, onSubmit, onCancel, submitLabe
         {triBool("equity", "Equity")}
         {triBool("visa_sponsorship", "Visa sponsorship")}
         {triBool("clearance_required", "Clearance required")}
-      </div>
-
-      <div className="field">
-        <label>Notes</label>
-        <textarea rows={3} value={form.notes || ""} onChange={(e) => set("notes", e.target.value)} />
       </div>
 
       <div className="btn-row" style={{ justifyContent: "flex-end", marginTop: 8 }}>

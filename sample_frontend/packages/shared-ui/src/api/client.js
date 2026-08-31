@@ -112,6 +112,7 @@ export function makeApi(baseUrl) {
     parseJobPosting: (data) => post(`/job-postings/parse`, data),
     updateJobPosting: (id, data) => patch(`/job-postings/${id}`, data),
     generateCoverLetter: (id, data) => post(`/job-postings/${id}/cover-letter`, data),
+    updateCoverLetter: (id, data) => patch(`/job-postings/${id}/cover-letter`, data),
     generateScore: (id, data) => post(`/job-postings/${id}/score`, data),
     deleteJobPosting: (id) => del(`/job-postings/${id}`),
 

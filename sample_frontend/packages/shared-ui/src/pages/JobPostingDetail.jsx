@@ -7,6 +7,7 @@ import JobPostingForm from "../components/JobPostingForm";
 import ResumeSelect from "../components/ResumeSelect";
 import RubricView from "../components/RubricView";
 import StatusStamp from "../components/StatusStamp";
+import InlineEditable from "../components/InlineEditable";
 import { formatDate, formatSalary } from "../constants";
 
 export default function JobPostingDetail() {
@@ -44,6 +45,28 @@ export default function JobPostingDetail() {
       showToast("Job posting updated");
     } catch (err) {
       showToast(err.message, "error");
+    }
+  }
+
+  async function handleSaveNotes(notes) {
+    try {
+      const updated = await api.updateJobPosting(id, { status: posting.status, notes: notes || null });
+      setPosting(updated);
+      showToast("Notes updated");
+    } catch (err) {
+      showToast(err.message, "error");
+      throw err; // let the inline editor show the error and keep the draft
+    }
+  }
+
+  async function handleSaveCoverLetter(content) {
+    try {
+      const updated = await api.updateCoverLetter(id, { content });
+      setPosting(updated);
+      showToast("Cover letter updated");
+    } catch (err) {
+      showToast(err.message, "error");
+      throw err;
     }
   }
 
@@ -169,12 +192,17 @@ export default function JobPostingDetail() {
                       <ul style={{ margin: 0, paddingLeft: 18 }}>{posting.responsibilities.map((r, i) => <li key={i}>{r}</li>)}</ul>
                     </div>
                   )}
-                  {posting.notes && (
-                    <div className="field">
-                      <label>Notes</label>
-                      <div className="bullet-block">{posting.notes}</div>
-                    </div>
-                  )}
+                  <div className="field">
+                    <label>Notes</label>
+                    <InlineEditable
+                      value={posting.notes || ""}
+                      onSave={handleSaveNotes}
+                      rows={8}
+                      placeholder="Add notes about this posting…"
+                      emptyText="No notes yet — click Edit to add notes."
+                      allowEmpty
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -200,10 +228,10 @@ export default function JobPostingDetail() {
                 </div>
               )}
 
-              {posting.cover_letter && (
-                <div className="card" style={{ marginBottom: 16 }}>
-                  <div className="card__header">
-                    <h3>Cover letter</h3>
+              <div className="card" style={{ marginBottom: 16 }}>
+                <div className="card__header">
+                  <h3>Cover letter</h3>
+                  {posting.cover_letter && (
                     <button
                       className="btn btn--ghost btn--sm"
                       onClick={() => {
@@ -213,12 +241,21 @@ export default function JobPostingDetail() {
                     >
                       Copy
                     </button>
-                  </div>
-                  <div className="card__body">
-                    <div className="cover-letter-view">{posting.cover_letter}</div>
-                  </div>
+                  )}
                 </div>
-              )}
+                <div className="card__body">
+                  <InlineEditable
+                    value={posting.cover_letter || ""}
+                    onSave={handleSaveCoverLetter}
+                    rows={20}
+                    placeholder="Cover letter content…"
+                    emptyText="No cover letter yet — click Edit to write one, or generate one from the panel on the right."
+                    allowEmpty={false}
+                    requiredMessage="Cover letter content is empty."
+                    textClassName="cover-letter-view"
+                  />
+                </div>
+              </div>
 
               {posting.rubric && (
                 <div className="card">

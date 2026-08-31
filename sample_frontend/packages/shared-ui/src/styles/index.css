@@ -455,6 +455,24 @@ table.jp-table {
   line-height: 1.6;
 }
 
+.inline-editable {
+  position: relative;
+}
+
+.inline-editable__edit-btn {
+  margin-top: 6px;
+}
+
+.inline-editable--editing textarea {
+  width: 100%;
+}
+
+.inline-editable__error {
+  color: var(--danger);
+  font-size: 12.5px;
+  margin-top: 6px;
+}
+
 .cover-letter-view {
   white-space: pre-wrap;
   font-family: var(--font-body);
