@@ -95,6 +95,9 @@ def create_resume(
         db: Session,
         resume_create: ResumeCreate
 ) -> Resume:
+    if not resume_create.resume_name.strip():
+        raise HTTPException(status_code=400, detail="Resume name is empty")
+
     is_first_resume = db.query(Resume).first() is None
 
     db_resume = Resume(
@@ -250,6 +253,9 @@ def update_resume(
         resume_id: UUID,
         resume_update: ResumeUpdate
 ) -> Resume:
+    if not resume_update.resume_name.strip():
+        raise HTTPException(status_code=400, detail="Resume name is empty")
+
     db_resume = get_resume(db, resume_id)
 
     update_data = resume_update.model_dump(exclude_unset=True)

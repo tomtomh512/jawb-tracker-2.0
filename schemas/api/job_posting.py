@@ -79,7 +79,7 @@ class ParseJobPostingCreate(BaseModel):
 
 
 class JobPostingUpdate(JobPosting):
-    status: JobApplicationStatus
+    status: JobApplicationStatus | None = None
 
 
 class JobPostingCoverLetterCreate(BaseModel):
