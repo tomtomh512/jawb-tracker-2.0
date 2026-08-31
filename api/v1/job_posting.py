@@ -54,6 +54,7 @@ async def parse_job_posting(
         parse_job_posting_create.content,
         parse_job_posting_create.link,
         parse_job_posting_create.resume_id,
+        parse_job_posting_create.custom_resume_content,
         parse_job_posting_create.include_cover_letter,
         parse_job_posting_create.include_score,
         parse_job_posting_create.cover_letter_prompt,
@@ -81,6 +82,7 @@ async def create_job_posting_cover_letter(
         db,
         job_posting_id,
         job_posting_cover_letter_create.resume_id,
+        job_posting_cover_letter_create.custom_resume_content,
         job_posting_cover_letter_create.prompt,
     )
 
@@ -109,7 +111,8 @@ async def create_job_posting_score(
     return await job_posting_service.create_job_posting_score(
         db,
         job_posting_id,
-        job_posting_score_create.resume_id
+        job_posting_score_create.resume_id,
+        job_posting_score_create.custom_resume_content,
     )
 
 

@@ -4,7 +4,7 @@ import { useApi } from "../api/useApi";
 import { useSettings } from "../context/SettingsContext";
 import { useToast } from "../context/ToastContext";
 import JobPostingForm from "../components/JobPostingForm";
-import ResumeSelect from "../components/ResumeSelect";
+import ResumeSelect, { CUSTOM_RESUME_VALUE } from "../components/ResumeSelect";
 import RubricView from "../components/RubricView";
 import StatusStamp from "../components/StatusStamp";
 import InlineEditable from "../components/InlineEditable";
@@ -22,9 +22,12 @@ export default function JobPostingDetail() {
   const [editing, setEditing] = useState(false);
 
   const [genResumeId, setGenResumeId] = useState("");
+  const [genCustomResumeContent, setGenCustomResumeContent] = useState("");
   const [genPrompt, setGenPrompt] = useState(settings.defaultCoverLetterPrompt);
   const [generatingLetter, setGeneratingLetter] = useState(false);
   const [generatingScore, setGeneratingScore] = useState(false);
+
+  const usingCustomResume = genResumeId === CUSTOM_RESUME_VALUE;
 
   function load() {
     setLoading(true);
@@ -83,9 +86,16 @@ export default function JobPostingDetail() {
 
   async function handleGenerateCoverLetter() {
     if (!genResumeId) return showToast("Select a resume first", "error");
+    if (usingCustomResume && !genCustomResumeContent.trim()) {
+      return showToast("Paste your tailored resume, or choose a saved resume", "error");
+    }
     setGeneratingLetter(true);
     try {
-      const updated = await api.generateCoverLetter(id, { resume_id: genResumeId, prompt: genPrompt });
+      const updated = await api.generateCoverLetter(id, {
+        resume_id: usingCustomResume ? null : genResumeId,
+        custom_resume_content: usingCustomResume ? genCustomResumeContent : null,
+        prompt: genPrompt,
+      });
       setPosting(updated);
       showToast("Cover letter generated");
     } catch (err) {
@@ -97,9 +107,15 @@ export default function JobPostingDetail() {
 
   async function handleGenerateScore() {
     if (!genResumeId) return showToast("Select a resume first", "error");
+    if (usingCustomResume && !genCustomResumeContent.trim()) {
+      return showToast("Paste your tailored resume, or choose a saved resume", "error");
+    }
     setGeneratingScore(true);
     try {
-      const updated = await api.generateScore(id, { resume_id: genResumeId });
+      const updated = await api.generateScore(id, {
+        resume_id: usingCustomResume ? null : genResumeId,
+        custom_resume_content: usingCustomResume ? genCustomResumeContent : null,
+      });
       setPosting(updated);
       showToast("Score generated");
     } catch (err) {
@@ -276,7 +292,13 @@ export default function JobPostingDetail() {
             <h3>Generate</h3>
           </div>
           <div className="card__body">
-            <ResumeSelect value={genResumeId} onChange={setGenResumeId} />
+            <ResumeSelect
+              value={genResumeId}
+              onChange={setGenResumeId}
+              allowCustom
+              customValue={genCustomResumeContent}
+              onCustomChange={setGenCustomResumeContent}
+            />
             <div className="field">
               <label>Cover letter prompt</label>
               <textarea rows={4} value={genPrompt} onChange={(e) => setGenPrompt(e.target.value)} />

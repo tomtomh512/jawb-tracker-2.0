@@ -6,10 +6,10 @@ from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, load_only
 
-from models import JobPosting, Rubric, RubricItem
+from models import JobPosting, Rubric, RubricItem, Resume
 from schemas.api.job_posting import JobPostingUpdate, JobPostingCreate, JobPostingResponse, JobApplicationStatus
 from schemas.api.resume import ResumeResponse
-from services.resume_service import get_resume
+from services.resume_service import get_resume, parse_resume_text
 from utils.cover_letter_generator import generate_cover_letter
 from utils.job_posting_parser import parse_job_posting_from_text
 from utils.score import score_resume
@@ -69,6 +69,7 @@ async def parse_job_posting(
         job_posting_content: str,
         job_posting_link: str | None = None,
         resume_id: UUID | None = None,
+        custom_resume_content: str | None = None,
         include_cover_letter: bool = False,
         include_score: bool = False,
         cover_letter_prompt: str | None = None,
@@ -76,8 +77,11 @@ async def parse_job_posting(
     if not job_posting_content.strip():
         raise HTTPException(status_code=400, detail="Job posting content is empty")
 
-    if (include_cover_letter or include_score) and resume_id is None:
-        raise HTTPException(status_code=400, detail="resume_id is required to generate a cover letter or score")
+    if custom_resume_content is not None and not custom_resume_content.strip():
+        raise HTTPException(status_code=400, detail="Custom resume content is empty")
+
+    if (include_cover_letter or include_score) and not (resume_id or custom_resume_content):
+        raise HTTPException(status_code=400, detail="A resume is required to generate a cover letter or score")
 
     parsed_job_posting = await parse_job_posting_from_text(
         job_posting=job_posting_content,
@@ -128,7 +132,24 @@ async def parse_job_posting(
     db.refresh(db_job_posting)
 
     if include_cover_letter or include_score:
-        db_resume = get_resume(db, resume_id)
+        if resume_id:
+            db_resume = get_resume(db, resume_id)
+
+        elif custom_resume_content:
+            company_part = db_job_posting.company or "job"
+            resume_name = f"{company_part}_{db_job_posting.id}"
+
+            existing = db.query(Resume).filter(Resume.resume_name == resume_name).first()
+
+            if existing is not None:
+                db.delete(existing)
+                db.commit()
+
+            db_resume = await parse_resume_text(
+                db,
+                custom_resume_content,
+                resume_name,
+            )
 
         resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
         job_posting_text = JobPostingResponse.model_validate(db_job_posting).model_dump_json(indent=2)
@@ -160,7 +181,7 @@ async def parse_job_posting(
             if "score" in results_by_key:
                 scored_rubric = results_by_key["score"]
                 db_job_posting.rubric = Rubric(
-                    resume_id=resume_id,
+                    resume_id=db_resume.id,
                     resume_name=db_resume.resume_name,
                     job_posting_id=db_job_posting.id,
                     job_title=db_job_posting.title,
@@ -223,11 +244,33 @@ def update_job_posting(
 async def create_job_posting_cover_letter(
         db: Session,
         job_posting_id: UUID,
-        resume_id: UUID,
+        resume_id: UUID | None = None,
+        custom_resume_content: str | None = None,
         prompt: str | None = None,
 ) -> JobPosting:
-    db_resume = get_resume(db, resume_id)
+    if not (resume_id or custom_resume_content):
+        raise HTTPException(status_code=400, detail="A resume is required") from None
+
     db_job_posting = get_job_posting(db, job_posting_id)
+
+    if resume_id:
+        db_resume = get_resume(db, resume_id)
+
+    elif custom_resume_content:
+        company_part = db_job_posting.company or "job"
+        resume_name = f"{company_part}_{db_job_posting.id}"
+
+        existing = db.query(Resume).filter(Resume.resume_name == resume_name).first()
+
+        if existing is not None:
+            db.delete(existing)
+            db.commit()
+
+        db_resume = await parse_resume_text(
+            db,
+            custom_resume_content,
+            resume_name,
+        )
 
     resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
     job_posting_text = JobPostingResponse.model_validate(db_job_posting).model_dump_json(indent=2)
@@ -279,10 +322,32 @@ def update_job_posting_cover_letter(
 async def create_job_posting_score(
         db: Session,
         job_posting_id: UUID,
-        resume_id: UUID,
+        resume_id: UUID | None = None,
+        custom_resume_content: str | None = None,
 ) -> JobPosting:
-    db_resume = get_resume(db, resume_id)
+    if not (resume_id or custom_resume_content):
+        raise HTTPException(status_code=400, detail="A resume is required") from None
+
     db_job_posting = get_job_posting(db, job_posting_id)
+
+    if resume_id:
+        db_resume = get_resume(db, resume_id)
+
+    elif custom_resume_content:
+        company_part = db_job_posting.company or "job"
+        resume_name = f"{company_part}_{db_job_posting.id}"
+
+        existing = db.query(Resume).filter(Resume.resume_name == resume_name).first()
+
+        if existing is not None:
+            db.delete(existing)
+            db.commit()
+
+        db_resume = await parse_resume_text(
+            db,
+            custom_resume_content,
+            resume_name,
+        )
 
     resume_text = ResumeResponse.model_validate(db_resume).model_dump_json(indent=2)
     job_posting_text = JobPostingResponse.model_validate(db_job_posting).model_dump_json(indent=2)

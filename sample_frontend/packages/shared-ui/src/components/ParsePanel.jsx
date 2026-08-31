@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useApi } from "../api/useApi";
 import { useSettings } from "../context/SettingsContext";
 import { useToast } from "../context/ToastContext";
-import ResumeSelect from "./ResumeSelect";
+import ResumeSelect, { CUSTOM_RESUME_VALUE } from "./ResumeSelect";
 import { ApiError } from "../api/client";
 
 export default function ParsePanel({ onCreated }) {
@@ -17,6 +17,7 @@ export default function ParsePanel({ onCreated }) {
   const [includeCoverLetter, setIncludeCoverLetter] = useState(false);
   const [includeScore, setIncludeScore] = useState(true);
   const [resumeId, setResumeId] = useState("");
+  const [customResumeContent, setCustomResumeContent] = useState("");
   const [prompt, setPrompt] = useState(settings.defaultCoverLetterPrompt);
   const [promptTouched, setPromptTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -35,6 +36,7 @@ export default function ParsePanel({ onCreated }) {
   }, [api]);
 
   const needsResume = includeCoverLetter || includeScore;
+  const usingCustomResume = resumeId === CUSTOM_RESUME_VALUE;
 
   function resetPromptToDefault() {
     setPrompt(settings.defaultCoverLetterPrompt);
@@ -47,16 +49,24 @@ export default function ParsePanel({ onCreated }) {
       showToast("Paste a job posting first", "error");
       return;
     }
-    if (needsResume && !resumeId) {
-      showToast("Select a resume to base the cover letter / score on", "error");
-      return;
+    if (needsResume) {
+      if (usingCustomResume) {
+        if (!customResumeContent.trim()) {
+          showToast("Paste your tailored resume, or choose a saved resume", "error");
+          return;
+        }
+      } else if (!resumeId) {
+        showToast("Select a resume to base the cover letter / score on", "error");
+        return;
+      }
     }
     setSubmitting(true);
     try {
       const posting = await api.parseJobPosting({
         link: link || "",
         content,
-        resume_id: needsResume ? resumeId : null,
+        resume_id: needsResume && !usingCustomResume ? resumeId : null,
+        custom_resume_content: needsResume && usingCustomResume ? customResumeContent : null,
         include_cover_letter: includeCoverLetter,
         include_score: includeScore,
         cover_letter_prompt: includeCoverLetter ? prompt : null,
@@ -66,6 +76,7 @@ export default function ParsePanel({ onCreated }) {
       setLink("");
       setIncludeCoverLetter(false);
       setIncludeScore(true);
+      setCustomResumeContent("");
       setPromptTouched(false);
       onCreated?.(posting);
     } catch (err) {
@@ -104,10 +115,6 @@ export default function ParsePanel({ onCreated }) {
         <div className="field">
           <label>Parse options</label>
           <div className="checkbox-line">
-            <input type="checkbox" checked disabled readOnly />
-            Parse the posting into structured fields
-          </div>
-          <div className="checkbox-line">
             <input
               type="checkbox"
               checked={includeCoverLetter}
@@ -123,7 +130,13 @@ export default function ParsePanel({ onCreated }) {
 
         {needsResume && (
           <>
-            <ResumeSelect value={resumeId} onChange={setResumeId} />
+            <ResumeSelect
+              value={resumeId}
+              onChange={setResumeId}
+              allowCustom
+              customValue={customResumeContent}
+              onCustomChange={setCustomResumeContent}
+            />
 
             {includeCoverLetter && (
               <div className="field">

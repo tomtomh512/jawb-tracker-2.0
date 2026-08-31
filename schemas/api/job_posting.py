@@ -73,6 +73,7 @@ class ParseJobPostingCreate(BaseModel):
     link: str | None = None
     content: str
     resume_id: UUID | None = None
+    custom_resume_content: str | None = None
     include_cover_letter: bool = False
     include_score: bool = False
     cover_letter_prompt: str | None = None
@@ -83,7 +84,8 @@ class JobPostingUpdate(JobPosting):
 
 
 class JobPostingCoverLetterCreate(BaseModel):
-    resume_id: UUID
+    resume_id: UUID | None = None
+    custom_resume_content: str | None = None
     prompt: str | None = None
 
 
@@ -92,7 +94,8 @@ class JobPostingCoverLetterUpdate(BaseModel):
 
 
 class JobPostingScoreCreate(BaseModel):
-    resume_id: UUID
+    resume_id: UUID | None = None
+    custom_resume_content: str | None = None
 
 
 class JobPostingResponse(JobPosting):
