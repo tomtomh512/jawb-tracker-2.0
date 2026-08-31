@@ -25,6 +25,23 @@
 
 * { box-sizing: border-box; }
 
+/* Scrollbar styles — matches shared-ui theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 2px solid var(--bg);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
 html, body { margin: 0; padding: 0; }
 
 body {

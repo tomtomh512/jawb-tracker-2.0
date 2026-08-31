@@ -171,17 +171,25 @@ async function loadClipboardNotes() {
 async function loadMainResume() {
   const checkbox = document.getElementById("includeScore");
   const label = document.getElementById("scoreLabel");
+  const clCheckbox = document.getElementById("includeCoverLetter");
+  const clLabel = document.getElementById("coverLetterLabel");
   try {
     const resume = await api.getMainResume();
     state.mainResume = resume;
     label.textContent = `Score against main resume (${resume.resume_name})`;
     checkbox.disabled = false;
     checkbox.checked = true;
+    clLabel.textContent = `Generate cover letter (using ${resume.resume_name})`;
+    clCheckbox.disabled = false;
+    // left unchecked intentionally — cover letter generation opts in
   } catch {
     state.mainResume = null;
     label.textContent = "Score against main resume (none set)";
     checkbox.checked = false;
     checkbox.disabled = true;
+    clLabel.textContent = "Generate cover letter (no main resume set)";
+    clCheckbox.checked = false;
+    clCheckbox.disabled = true;
   }
 }
 
@@ -247,6 +255,7 @@ async function handleParseSubmit(e) {
   const contentEl = document.getElementById("content");
   const linkEl = document.getElementById("link");
   const includeScoreEl = document.getElementById("includeScore");
+  const includeCoverLetterEl = document.getElementById("includeCoverLetter");
   const parseBtn = document.getElementById("parseBtn");
 
   const content = contentEl.value.trim();
@@ -256,8 +265,9 @@ async function handleParseSubmit(e) {
   }
 
   const includeScore = includeScoreEl.checked;
-  if (includeScore && !state.mainResume) {
-    showToast("No main resume found to score against", "error");
+  const includeCoverLetter = includeCoverLetterEl.checked;
+  if ((includeScore || includeCoverLetter) && !state.mainResume) {
+    showToast("No main resume found to score/generate against", "error");
     return;
   }
 
@@ -269,8 +279,8 @@ async function handleParseSubmit(e) {
     await api.parseJobPosting({
       link: linkEl.value || "",
       content,
-      resume_id: includeScore ? state.mainResume.id : null,
-      include_cover_letter: false,
+      resume_id: (includeScore || includeCoverLetter) ? state.mainResume.id : null,
+      include_cover_letter: includeCoverLetter,
       include_score: includeScore,
       cover_letter_prompt: null,
     });
@@ -278,6 +288,7 @@ async function handleParseSubmit(e) {
     contentEl.value = "";
     linkEl.value = "";
     includeScoreEl.checked = true;
+    includeCoverLetterEl.checked = false; // reset to default unchecked
     await loadJobPostings();
   } catch (err) {
     showToast(err instanceof ApiError ? err.message : "Failed to parse job posting", "error");
