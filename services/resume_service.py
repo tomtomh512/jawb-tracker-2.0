@@ -132,6 +132,12 @@ async def parse_resume_text(
         resume_text_content: str,
         resume_name: str,
 ) -> Resume:
+    if not resume_text_content.strip():
+        raise HTTPException(status_code=400, detail="Resume content is empty")
+
+    if not resume_name.strip():
+        raise HTTPException(status_code=400, detail="Resume name is empty")
+
     existing = db.query(Resume).filter(Resume.resume_name == resume_name).first()
     if existing is not None:
         raise HTTPException(status_code=400, detail="Resume name already exists")
@@ -175,6 +181,12 @@ async def parse_resume_upload(
     resume_name: str,
     upload: UploadFile,
 ) -> Resume:
+    if not resume_name.strip():
+        raise HTTPException(status_code=400, detail="Resume name is empty")
+
+    if not upload:
+        raise HTTPException(status_code=400, detail="No upload provided")
+
     if upload.content_type not in ["application/pdf", "image/jpeg", "image/png"]:
         raise HTTPException(status_code=400, detail="File must be a PDF, JPG, or PNG")
 

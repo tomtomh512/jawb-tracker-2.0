@@ -66,18 +66,18 @@ def create_job_posting(
 
 async def parse_job_posting(
         db: Session,
-        job_posting_link: str,
         job_posting_content: str,
+        job_posting_link: str | None = None,
         resume_id: UUID | None = None,
         include_cover_letter: bool = False,
         include_score: bool = False,
         cover_letter_prompt: str | None = None,
 ) -> JobPosting:
+    if not job_posting_content.strip():
+        raise HTTPException(status_code=400, detail="Job posting content is empty")
+
     if (include_cover_letter or include_score) and resume_id is None:
-        raise HTTPException(
-            status_code=400,
-            detail="resume_id is required to generate a cover letter or score",
-        )
+        raise HTTPException(status_code=400, detail="resume_id is required to generate a cover letter or score")
 
     parsed_job_posting = await parse_job_posting_from_text(
         job_posting=job_posting_content,
@@ -220,11 +220,11 @@ def update_job_posting(
     return db_job_posting
 
 
-async def update_job_posting_cover_letter(
+async def create_job_posting_cover_letter(
         db: Session,
         job_posting_id: UUID,
         resume_id: UUID,
-        prompt: str,
+        prompt: str | None = None,
 ) -> JobPosting:
     db_resume = get_resume(db, resume_id)
     db_job_posting = get_job_posting(db, job_posting_id)
@@ -254,7 +254,29 @@ async def update_job_posting_cover_letter(
     return db_job_posting
 
 
-async def update_job_posting_score(
+def update_job_posting_cover_letter(
+        db: Session,
+        job_posting_id: UUID,
+        content: str
+):
+    if not content.strip():
+        raise HTTPException(status_code=400, detail="Cover letter content is empty") from None
+
+    db_job_posting = get_job_posting(db, job_posting_id)
+
+    try:
+        db_job_posting.updated_at = func.now()
+        db_job_posting.cover_letter = content
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Could not set cover letter") from None
+
+    db.refresh(db_job_posting)
+    return db_job_posting
+
+
+async def create_job_posting_score(
         db: Session,
         job_posting_id: UUID,
         resume_id: UUID,

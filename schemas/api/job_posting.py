@@ -70,11 +70,11 @@ class JobPostingCreate(JobPosting):
 
 
 class ParseJobPostingCreate(BaseModel):
-    link: str
+    link: str | None = None
     content: str
-    resume_id: UUID | None = None,
-    include_cover_letter: bool = False,
-    include_score: bool = False,
+    resume_id: UUID | None = None
+    include_cover_letter: bool = False
+    include_score: bool = False
     cover_letter_prompt: str | None = None
 
 
@@ -82,12 +82,16 @@ class JobPostingUpdate(JobPosting):
     status: JobApplicationStatus
 
 
-class JobPostingCoverLetterUpdate(BaseModel):
+class JobPostingCoverLetterCreate(BaseModel):
     resume_id: UUID
     prompt: str | None = None
 
 
-class JobPostingScoreUpdate(BaseModel):
+class JobPostingCoverLetterUpdate(BaseModel):
+    content: str = None
+
+
+class JobPostingScoreCreate(BaseModel):
     resume_id: UUID
 
 

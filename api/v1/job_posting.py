@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from limiter import limiter
 from database import get_db
 from schemas.api.job_posting import (JobPostingResponse, JobPostingUpdate, JobPostingCreate, ParseJobPostingCreate,
-                                     JobPostingCoverLetterUpdate, JobPostingScoreUpdate, JobPostingSummaryResponse,
-                                     JobApplicationStatus)
+                                     JobPostingCoverLetterCreate, JobPostingScoreCreate, JobPostingSummaryResponse,
+                                     JobApplicationStatus, JobPostingCoverLetterUpdate)
 from services import job_posting_service
 
 router = APIRouter(
@@ -51,8 +51,8 @@ async def parse_job_posting(
 ):
     return await job_posting_service.parse_job_posting(
         db,
-        parse_job_posting_create.link,
         parse_job_posting_create.content,
+        parse_job_posting_create.link,
         parse_job_posting_create.resume_id,
         parse_job_posting_create.include_cover_letter,
         parse_job_posting_create.include_score,
@@ -71,32 +71,45 @@ def update_job_posting(
 
 @router.post("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)
 @limiter.limit("3/minute")
-async def update_job_posting_cover_letter(
+async def create_job_posting_cover_letter(
         request: Request,
+        job_posting_id: UUID,
+        job_posting_cover_letter_create: JobPostingCoverLetterCreate,
+        db: Session = Depends(get_db),
+):
+    return await job_posting_service.create_job_posting_cover_letter(
+        db,
+        job_posting_id,
+        job_posting_cover_letter_create.resume_id,
+        job_posting_cover_letter_create.prompt,
+    )
+
+
+@router.patch("/{job_posting_id}/cover-letter", response_model=JobPostingResponse)
+def update_job_posting(
         job_posting_id: UUID,
         job_posting_cover_letter_update: JobPostingCoverLetterUpdate,
         db: Session = Depends(get_db),
 ):
-    return await job_posting_service.update_job_posting_cover_letter(
+    return job_posting_service.update_job_posting_cover_letter(
         db,
         job_posting_id,
-        job_posting_cover_letter_update.resume_id,
-        job_posting_cover_letter_update.prompt,
+        job_posting_cover_letter_update.content
     )
 
 
 @router.post("/{job_posting_id}/score", response_model=JobPostingResponse)
 @limiter.limit("3/minute")
-async def update_job_posting_score(
+async def create_job_posting_score(
         request: Request,
         job_posting_id: UUID,
-        job_posting_score_update: JobPostingScoreUpdate,
+        job_posting_score_create: JobPostingScoreCreate,
         db: Session = Depends(get_db),
 ):
-    return await job_posting_service.update_job_posting_score(
+    return await job_posting_service.create_job_posting_score(
         db,
         job_posting_id,
-        job_posting_score_update.resume_id
+        job_posting_score_create.resume_id
     )
 
 
